@@ -3,66 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mosque Directory</title>
+    <title>Birmingham Mosque Directory</title>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
         }
         .container {
             max-width: 1400px;
             margin: 0 auto;
             background: white;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-radius: 12px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 20px;
         }
         h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 20px;
+            color: #1a73e8;
+            margin: 0;
+            font-size: 2.2rem;
+        }
+        p.subtitle {
+            color: #666;
+            margin-top: 5px;
         }
         /* Map Button Styling */
         .map-btn {
-            background-color: #4285F4;
+            background-color: #34a853;
             color: white;
-            padding: 6px 12px;
+            padding: 8px 16px;
             text-decoration: none;
-            border-radius: 4px;
+            border-radius: 6px;
             font-size: 13px;
-            font-weight: bold;
+            font-weight: 600;
             display: inline-block;
-            transition: background 0.2s;
+            transition: all 0.2s ease;
+            white-space: nowrap;
         }
         .map-btn:hover {
-            background-color: #3367d6;
+            background-color: #2d8e47;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             color: white;
         }
-        /* Table Styling */
-        table.dataTable thead th {
-            background-color: #e0e0e0;
-            color: #333;
-            border-bottom: 2px solid #ccc;
+        /* Table Aesthetics */
+        table.dataTable {
+            border-collapse: collapse !important;
+            margin-top: 20px !important;
         }
-        table.dataTable tbody tr:hover {
-            background-color: #f1f1f1;
+        table.dataTable thead th {
+            background-color: #f8f9fa;
+            color: #444;
+            font-weight: 700;
+            padding: 15px 10px !important;
+            border-bottom: 1px solid #ddd !important;
+        }
+        table.dataTable tbody td {
+            padding: 12px 10px !important;
+            border-bottom: 1px solid #eee !important;
+            color: #555;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Mosque Directory</h1>
+    <header>
+        <h1>Birmingham Mosque Directory</h1>
+        <p class="subtitle">Complete list of mosques in Birmingham with addresses and navigation</p>
+    </header>
+
     <table id="mosqueTable" class="display" style="width:100%">
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Address</th>
+                <th>Mosque Name</th>
+                <th>Full Address</th>
                 <th>Latitude</th>
                 <th>Longitude</th>
-                <th>Action</th>
+                <th>Navigation</th>
             </tr>
         </thead>
         <tbody>
@@ -74,12 +100,187 @@
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 
 <script>
-    // Data embedded directly for standalone use
-    const mosqueData = [{"Name": "Aberdeen Mosque and Islamic Centre", "Address": "164-168 Spital. 01224 493764, Aberdeen City,AB24 3JD", "Latitude": 57.16091608, "Longitude": -2.10075438}, {"Name": "University of Aberdeen Muslim Students Association", "Address": "Powis Gate, College Bounds., Aberdeen City,AB24 3DY", "Latitude": 57.16336178, "Longitude": -2.102459093}, {"Name": "Masjid al Aqsa", "Address": "Gilnow Road. 01204 771918, Halliwell,Bolton,BL1 4LL", "Latitude": 53.57595796, "Longitude": -2.451085746}, {"Name": "Mid Sussex Islamic Centre and Mosque", "Address": "19 Wivelsfield Road. 01444 628909, Mid Sussex,RH16 4EF", "Latitude": 50.99172797, "Longitude": -0.0998961926}, {"Name": "Islamic Students Society of Aberystwyth", "Address": "The Old Gymnasium, Vicarage Playing Fields, Llanbadarn Road. 07865 644533, Sir Ceredigion - Ceredigion,SY23 1HA  approx (officially SY23 2AX)", "Latitude": 52.41274365, "Longitude": -4.074758291}, {"Name": "Raza Jamia Masjid Mosque", "Address": "229 Blackburn Road., Church,Hyndburn,BB5 0AL", "Latitude": 53.75294855, "Longitude": -2.374818474}, {"Name": "Majlis Sautul Quraan", "Address": "5-7 Countess Street. 01254 386223, Church,Hyndburn,BB5 1SX", "Latitude": 53.75403409, "Longitude": -2.375356257}, {"Name": "Madni Masjid", "Address": "4-6 Empress Street. 01254 875159, Church,Hyndburn,BB5 1SG", "Latitude": 53.75307066, "Longitude": -2.38476947}, {"Name": "Ghosia Raza Jamia Masjid and Islamic Centre", "Address": "8 Lower Antley Street, 13 Grimshaw Street. 01254 233740, Church,Hyndburn,BB5 0BA", "Latitude": 53.75227612, "Longitude": -2.3792696}, {"Name": "Jumu'ah Salaah", "Address": "Rochdale Scout Centre, 41 Dale Avenue. 07956 442186, Edgware,Harrow,HA8 6AD", "Latitude": 51.60016175, "Longitude": -0.2860361338}, {"Name": "Ghousia Rizvia Jamia Masjid and Islamic Centre", "Address": "44a Higher Antley Street. 01254 236281, Hyndburn,BB5 0SN,", "Latitude": 53.74866004, "Longitude": -2.373009324}, {"Name": "Al Falaah Academy", "Address": "311 Calder Street. 0141 258 2957, Crosshill,Glasgow,G42 7NH", "Latitude": 55.83666306, "Longitude": -4.25560087}, {"Name": "Jumu'ah Salaah", "Address": "Veterans Hall, Osidge Lane. 07956 442186, Southgate,Barnet,N14 5DU", "Latitude": 51.63119451, "Longitude": -0.1459980011}, {"Name": "Jamiat Ahl-e-Hadith", "Address": "2 Park Road. 01254 237974, Hyndburn,BB5 1SU", "Latitude": 53.75283278, "Longitude": -2.378853858}, {"Name": "Al-Aqsaa Red Lane Masjid", "Address": "108-114 Red Lane. 02477 672850, Upper Stoke,Coventry,CV6 5EQ", "Latitude": 52.42068431, "Longitude": -1.491575411}, {"Name": "[20WStdnt]Prayer Room", "Address": "Middlesex University Students Union, Hendon Campus, Middlese.... 07968 486736, Hendon,Barnet,NW4 4BT", "Latitude": 51.58976279, "Longitude": -0.2287709713}, {"Name": "Musallah", "Address": "basement of Butlers News, 16 Great Western Road., Paddington,City of Westminster,W9 3NN", "Latitude": 51.52378831, "Longitude": -0.2018657327}, {"Name": "Musalla as salaam", "Address": "97 Whins Road. 01259 724623, Clackmannanshire,FK10 3RF", "Latitude": 56.12003104, "Longitude": -3.781700134}, {"Name": "[Unsure] Dar-ul-Uloom Qadiria Jilania", "Address": "95 Burlington Street. 0161 308 3510, Tameside,OL6 7HJ", "Latitude": 53.48730185, "Longitude": -2.104368657}, {"Name": "[10Wmulti]Multi-faith room", "Address": "Selfridges, 400 Oxford Street., City of Westminster,W1A 1AB", "Latitude": 51.51421607, "Longitude": -0.152580142}, {"Name": "Masjid Hamza", "Address": "319-321 Katherine Street. 0161 330 9837, Richmond Hill,Tameside,OL7 0AL", "Latitude": 53.48619107, "Longitude": -2.105952501}, {"Name": "Hounslow Muslim Centre", "Address": "4-6 Hanworth Road., Hounslow,Hounslow,TW3 1UE", "Latitude": 51.46962095, "Longitude": -0.3572139143}, {"Name": "Islamic Integration Community Centre", "Address": "Phoenix Court, 531 Staines Road. 020 8570 7978, Hounslow,Hounslow,TW4 5DP", "Latitude": 51.46271407, "Longitude": -0.3895425796}, {"Name": "Masjid Ar Raheem", "Address": "14 Stanhope Street. 0161 343 5426, Mossley,Tameside,OL6 9QZ", "Latitude": 53.49349993, "Longitude": -2.079983354}, {"Name": "Jamia Masjid Abu Huraira", "Address": "9 Lodge Lane. 0113 271 8050, Beeston,Leeds,LS11 6AS", "Latitude": 53.77513187, "Longitude": -1.55241698}, {"Name": "Islamic Da'wah Academy", "Address": "Berners Street. 0116 262 5440, City of Leicester,LE2 0AG", "Latitude": 52.63429029, "Longitude": -1.113899946}, {"Name": "Jamia Ghausia", "Address": "Havelock Street. 01296 398446, Aylesbury Vale,HP20 2NX", "Latitude": 51.82143887, "Longitude": -0.8105072379}, {"Name": "Imam Ali Centre", "Address": "Former St Stephen's Church, Mount Stuart Square. 07957 448337, Bute Town,Caerdydd - Cardiff,CF10 5LR", "Latitude": 51.4655214, "Longitude": -3.167114854}, {"Name": "Aylesbury Islamic Educational Trust", "Address": "33 Tring Road. 01296 422245, Aylesbury Vale,HP20 1LD", "Latitude": 51.81523122, "Longitude": -0.7988744974}, {"Name": "Ballyhaunis Mosque", "Address": "3 Sherwood Ave, Abbeyquarter. +353 861708562, Ballyhaunis,None until 2015", "Latitude": 53.76035724, "Longitude": -8.770608902}, {"Name": "Madni Mosque", "Address": "Merton Street. 01295 276662, Cherwell,OX16 4RP", "Latitude": 52.06165688, "Longitude": -1.325148046}, {"Name": "Sheikh Abdul Aziz ibn Bazz Mosque", "Address": "55 Park Road. 01295 268307, Cherwell,OX16 0DH", "Latitude": 52.06197927, "Longitude": -1.349624544}, {"Name": "Bangor Islamic Centre & Muslim Welfare House", "Address": "57 and 61 High Street. 01248 354612, Gwynedd - Gwynedd,LL57 1NR", "Latitude": 53.22346574, "Longitude": -4.130701125}, {"Name": "Muslim Welfare Association Centre", "Address": "332 Holton Road. 01446 745822, Palmerstown,Bro Morgannwg - the Vale of Glamorgan,CF63 4HX", "Latitude": 51.41020195, "Longitude": -3.252924085}, {"Name": "Wessex Shi'a Ithna Asheri Jamat (Al Mahdi)", "Address": "Al Mahdi Centre, Fontley Road. 01329 842742, Winchester,PO15 6QR", "Latitude": 50.87602876, "Longitude": -1.217760444}, {"Name": "Leagrave Hall Masjid", "Address": "145 High Street. 01582 594885, Leagrave Hall,Luton,LU4 9LE", "Latitude": 51.90028223, "Longitude": -0.4690700769}, {"Name": "Al Birr Masjid", "Address": "35-37 Sarum Hill. 01256 324859, Basingstoke and Deane,RG21 8SS", "Latitude": 51.263467, "Longitude": -1.092391}, {"Name": "Prayer Room", "Address": "3rd Floor, The Hub, Jordan Well. 024 7765 5296, Coventry,CV1 5QP", "Latitude": 52.40752937, "Longitude": -1.504606605}, {"Name": "University of Bath Islamic Society", "Address": "Norwood House, Convocation Avenue., Bath and North East Somerset,BA2 7AY", "Latitude": 51.37953858, "Longitude": -2.327172717}, {"Name": "Bath Islamic Centre and Mosque", "Address": "8 Pierrepoint Street. 01225 460922, Bath and North East Somerset,BA1 1LA", "Latitude": 51.38011482, "Longitude": -2.357221842}, {"Name": "Sarajia Islamic Studies Centre", "Address": "5 Whitburn Road. 01506 635380, West Lothian,EH48 1HE", "Latitude": 55.90065839, "Longitude": -3.642273545}, {"Name": "[50]Borehamwood Islamic Society", "Address": "160 Aycliffe Road. 07508 936038, Hertsmere,WD6 4EG", "Latitude": 51.6682709, "Longitude": -0.2826076001}, {"Name": "Jumma Masjid", "Address": "206 Bradford Road. 01924 430105, Batley Carr,Kirklees,WF13 2HD", "Latitude": 53.70126069, "Longitude": -1.630589962}, {"Name": "Prayer Room", "Address": "Basement, Charles Ward Building, Cope Street., Coventry,CV1 5FD", "Latitude": 52.40846857, "Longitude": -1.504247189}, {"Name": "Jamia Al-Saeed", "Address": "160 Bromley Street. 01924 465550, Hanging Heaton,Kirklees,WF17 6LB", "Latitude": 53.70364558, "Longitude": -1.625187993}, {"Name": "Madrassah Muhammadia Ghausia", "Address": "111 Dark Lane. 01924 446217, Mount Pleasant,Kirklees,WF17 7PW", "Latitude": 53.70697023, "Longitude": -1.641254425}, {"Name": "Masjid-e-Noor and Madressa Anwarool-Islam", "Address": "90 Dark Lane. 01924 441474, Mount Pleasant,Kirklees,WF17 7RN", "Latitude": 53.71000887, "Longitude": -1.642155647}, {"Name": "Islamic Cultural Welfare Association", "Address": "17 Henry Street. 01924 463275, Batley Carr,Kirklees,WF17 6JJ", "Latitude": 53.70301365, "Longitude": -1.630766988}, {"Name": "Hussainia Al Imam Al Mahdi", "Address": "155a Fordwych Road., Cricklewood,Camden,NW2 3NG", "Latitude": 51.55315422, "Longitude": -0.2083727718}, {"Name": "Tauheed Universal Charity Foundation", "Address": "22 Salisbury Road., Adamstown,Caerdydd - Cardiff,CF24 4AD", "Latitude": 51.48706273, "Longitude": -3.173070699}, {"Name": "Mount Pleasant Medina Islamic Trust", "Address": "Purlwell Lane. 01924 472378, Mount Pleasant,Kirklees,WF17 7NQ", "Latitude": 53.709396, "Longitude": -1.636214}, {"Name": "Masjid and Madresa Noor-ul-Islam", "Address": "20 Snowdon Street. 01924 472919, Mount Pleasant,Kirklees,WF17 7RS", "Latitude": 53.71012158, "Longitude": -1.640766263}, {"Name": "Anjuman-e-Zinatul Islam", "Address": "78 Taylor Street. 01924 445456, Mount Pleasant,Kirklees,WF17 5BA", "Latitude": 53.7093421, "Longitude": -1.632027626}, {"Name": "[100Maud]Airdrie and Coatbridge Islamic Centre", "Address": "41 Bell Street. 01236 749163, North Lanarkshire,ML6 0BS", "Latitude": 55.86649827, "Longitude": -3.985438049}, {"Name": "Bearsden Muslim Association Community Centre", "Address": "1 Speirs Road. 07866 261403, Bearsden,East Dunbartonshire,G61 2LX", "Latitude": 55.91239169, "Longitude": -4.320311844}, {"Name": "Dawatal Islam Mosque", "Address": "West Acre Drive. 01924 424786, Soothill,Kirklees,WF17 6PE", "Latitude": 53.71365525, "Longitude": -1.622229517}, {"Name": "Jamia Masjid Muhammadia Ghausia", "Address": "1 Whitaker Street. 01924 472215, Kirklees,WF17 5AQ", "Latitude": 53.71068832, "Longitude": -1.629238129}, {"Name": "prayer room", "Address": "above Javid Fashions, 1a Adelaide Street. 01253 772857, Wyre,FY7 6AD", "Latitude": 53.92344137, "Longitude": -3.005871177}, {"Name": "Bedford Central Jamee Masjid And Islamic Cultural Centre", "Address": "34 Brereton Road, corner of Alexandra Road. 01234 360346, Bedford,MK40 1HU", "Latitude": 52.13699474, "Longitude": -0.4744130373}, {"Name": "Bangladesh Islamic Mission and Jamee Mosjid", "Address": "65 Commercial Road. 01234 219427, Bedford,MK40 1QS", "Latitude": 52.13417129, "Longitude": -0.4736164212}, {"Name": "Marhaba Welcome Centre", "Address": "151 Balmoral Street. 0774 996 7372, Whiteinch,Glasgow City,G14 0HB", "Latitude": 55.87620161, "Longitude": -4.356164932}, {"Name": "Jamia Masjid Hanfia Ghousia", "Address": "75a Ford End Road. 01234 346516, Queen's Park,Bedford,MK40 4JG", "Latitude": 52.13261215, "Longitude": -0.4832214117}, {"Name": "Belfast Islamic Centre", "Address": "Aldersgate House, 13-19 University Road., Malone,Belfast,BT7 1NA", "Latitude": 54.58730614, "Longitude": -5.935969949}, {"Name": "Jameh Masjid Gulshan-e-Baghdad", "Address": "1-7 Westbourne Road. 01234 351770, Bedford,MK40 4LB", "Latitude": 52.13221371, "Longitude": -0.4850721359}, {"Name": "Cranfield Islamic Society", "Address": "Cranfield University, 1 College Road, Wharley End. 07900 586895, Cranfield,Central Bedfordshire,MK43 0AL", "Latitude": 52.07454034, "Longitude": -0.6270125641}, {"Name": "Masjid-ul-Aqsa and Islamic Centre", "Address": "135 Windsor Road. 0161 633 0327, Coppice,Oldham,OL8 1RG", "Latitude": 53.53239363, "Longitude": -2.123795897}, {"Name": "Madani Foundation", "Address": "81 Dolphin Street. 01633 250321, Pillgwenlly,Casnewydd - Newport,NP20 2AR", "Latitude": 51.579764, "Longitude": -2.989017}, {"Name": "Paisley Muslim Community Centre", "Address": "22 Wellmeadow Street., Renfrewshire,PA1 2EE", "Latitude": 55.84454995, "Longitude": -4.43468391}, {"Name": "Belfast Islamic Centre", "Address": "38 Wellington Park. 028 9066 4465, Belfast,BT9 6DN", "Latitude": 54.58249704, "Longitude": -5.942051858}, {"Name": "Jabir bin Zayd Islamic Centre", "Address": "Medite House, 11-13 Broadway. 020 8594 3100, Barking,Barking and Dagenham,IG11 7LS", "Latitude": 51.53601553, "Longitude": 0.0770652294}, {"Name": "Masjid Muhammadi and Madressa Salafiah", "Address": "24-36 Hartopp Road. 0121 328 7773, Adderley Park,Birmingham, Hodge Hill,B8 1TE", "Latitude": 52.48613196, "Longitude": -1.850616932}, {"Name": "Jamia Masjid Mohul Islam", "Address": "12-14 Victoria Road. 0121 551 8821, Aston (south west),Birmingham, Ladywood,B6 5HA", "Latitude": 52.50277909, "Longitude": -1.896944046}, {"Name": "Jumu'ah Salaah", "Address": "Shelly Farm Community Centre, Farmhouse Way. 07732 547242, Monkspath,Solihull,B90 4EH", "Latitude": 52.39107847, "Longitude": -1.785879135}, {"Name": "Islamic Cultural Centre", "Address": "129 Normandy Road. 07507 685568, Aston (north west),Birmingham, Ladywood,B20 3AX", "Latitude": 52.51020163, "Longitude": -1.894863993}, {"Name": "Blackheath Jamia Mosque", "Address": "143-150 Malt Mill Lane. 07832969429, Halesowen,Dudley,B62 8JA", "Latitude": 52.47058798, "Longitude": -2.035059035}, {"Name": "Masjid-e-Noor", "Address": "149-150 New John Street. not known, Halesowen,Dudley,B62 8HT  ,", "Latitude": 52.4710226, "Longitude": -2.037698329}, {"Name": "Masjid Bilal", "Address": "14 Linwood Road. 0121 515 2110, Handsworth,Birmingham, Perry Barr,B21 9HT,", "Latitude": 52.50455953, "Longitude": -1.936395317}, {"Name": "Ar-Rahma Islamic Centre", "Address": "29 Whitmore Road. 0121 766 8896, Small Heath,Birmingham, Ladywood,B10 0NR", "Latitude": 52.47021382, "Longitude": -1.863346696}, {"Name": "Madina Mosque", "Address": "113-115 Station Road. 0121 444 8988, Highbury Park,Birmingham, Hall Green,B14 7TA", "Latitude": 52.43601543, "Longitude": -1.896831393}, {"Name": "Jamia Masjid Bilal Community Centre", "Address": "1 Willows Crescent. 0121 446 6210, Balsall Heath,Birmingham, Hall Green,B12 9NS", "Latitude": 52.45553049, "Longitude": -1.895935535}, {"Name": "Madina Mosque", "Address": "150 Adderley Road. 0121 327 1123, Adderley Park,Birmingham, Hodge Hill,B8 1AN", "Latitude": 52.48828302, "Longitude": -1.861715913}, {"Name": "Al-Asr Education & Community Centre", "Address": "118 Goldsworth Road. 01483 599222, Woking,GU21 6ND", "Latitude": 51.31703809, "Longitude": -0.5692827702}, {"Name": "Shah Jalal Jami Masjid", "Address": "1-3 Ralph Road. 0121 328 8981, Adderley Park,Birmingham, Hodge Hill,B8 1NA", "Latitude": 52.48995545, "Longitude": -1.855603159}, {"Name": "Islamic Centre", "Address": "Regent Road., Hanley,City of Stoke-on-Trent,ST1 3AY", "Latitude": 53.01839442, "Longitude": -2.176907659}, {"Name": "The Mosque", "Address": "2 Blake Lane. 0121 771 3247, Bordesley Green,Birmingham, Hodge Hill,B9 5QY", "Latitude": 52.47623444, "Longitude": -1.842088848}, {"Name": "Spiritual Centre Madrassa Naqshbabundia Nawabia Aslamia", "Address": "108 Bordesley Green. 0121 766 6845, Bordesley Green,Birmingham, Ladywood,B9 4TS", "Latitude": 52.47667309, "Longitude": -1.857283562}, {"Name": "Bordesley Green Islamic Centre", "Address": "122 Bordesley Green. 0121 766 6371, Bordesley Green,Birmingham, Ladywood,B9 4TS", "Latitude": 52.4767909, "Longitude": -1.856906712}, {"Name": "Faizan-e-Madinah", "Address": "76-82 Bordesley Green Road. 0121 772 3387, Bordesley Green,Birmingham, Ladywood,B9 4TA", "Latitude": 52.47892834, "Longitude": -1.856281757}, {"Name": "Marakazi Jamaat-E-Ahle-Sunnat", "Address": "236-238 Charles Road. 0121 772 6578, Bordesley Green,Birmingham, Hodge Hill,B10 9AA", "Latitude": 52.47365801, "Longitude": -1.850936115}, {"Name": "Masjid As-Sunnah An-Nabawiyyah", "Address": "125 Mansfield Road. 0121 523 4761, Aston,Birmingham, Ladywood,B6 6DA", "Latitude": 52.50425631, "Longitude": -1.899475449}, {"Name": "Jamia Masjid Naqshbandia Aslamia", "Address": "63 Tile Street. 07800 798457, Manningham,Bradford,BD8 8NX", "Latitude": 53.8023743, "Longitude": -1.776432395}, {"Name": "Jami Masjid and Islamic Centre", "Address": "505-527 Coventry Road. 0121 772 6408, Small Heath Park,Birmingham, Yardley,B10 0LL", "Latitude": 52.46854391, "Longitude": -1.855959892}, {"Name": "Masjid Usman", "Address": "53-55 Shireland Road. 0121 565 5767, Sandwell,B66 4RG", "Latitude": 52.485397, "Longitude": -1.96023}, {"Name": "Masjid Qamarul Islam", "Address": "168-170 Fosbrooke Road. 0121 773 0372, Yardley Green,Birmingham, Hodge Hill,B10 9JP", "Latitude": 52.47174642, "Longitude": -1.832259893}, {"Name": "Central Jamia Mosque Ghamkol Sharif", "Address": "150 Golden Hillock Road. 0121 773 7277, Small Heath Park,Birmingham, Yardley,B10 0DX", "Latitude": 52.46495224, "Longitude": -1.858416796}, {"Name": "Green Lane Masjid & Community Centre", "Address": "20 Green Lane. 0121 713 0080, Small Heath,Birmingham, Ladywood,B9 5DB", "Latitude": 52.47293341, "Longitude": -1.864729375}, {"Name": "Idara Maarif-e-Islam Hussainia Mosque and Community Centre", "Address": "Herbert Road and Regent Park Road. 0121 773 6212, Small Heath,Birmingham, Ladywood,B10 0QP", "Latitude": 52.47141801, "Longitude": -1.866243482}, {"Name": "Al-Hijrah Mosque", "Address": "59-61 Hob Moor Road. 0121 766 5454, Yardley Green,Birmingham, Hodge Hill,B10 9AZ", "Latitude": 52.47424944, "Longitude": -1.839255095}, {"Name": "The Zawiya", "Address": "1 Jenkins Street. not known, Small Heath,Birmingham, Ladywood,B10 0QH", "Latitude": 52.47125625, "Longitude": -1.864119172}, {"Name": "Al-Quraan Islamic Academic Centre", "Address": "140 Mansel Road. 0121 773 9604, Digby Park,Birmingham, Hodge Hill,B10 9NJ", "Latitude": 52.47172518, "Longitude": -1.845807731}, {"Name": "Quran Academy Bristol", "Address": "26 Abingdon Road. 07852 238463, Fishponds,City of Bristol,BS16 3NY", "Latitude": 51.47329746, "Longitude": -2.530787587}, {"Name": "Madrasa Mujadidia", "Address": "339 Somerville Road. 0121 766 7587, Digby Park,Birmingham, Hodge Hill,B10 9DU", "Latitude": 52.46961245, "Longitude": -1.841400858}, {"Name": "former Ilm Centre", "Address": "11 Hessel Street. 07588 796792, Poplar,Tower Hamlets,E1 2LR", "Latitude": 51.51421691, "Longitude": -0.0622922927}, {"Name": "Masjid Noor-ul-Uloom", "Address": "81-85 St Oswald Road. 0121 772 4774, Small Heath Park,Birmingham, Hodge Hill,B10 9RB", "Latitude": 52.46994585, "Longitude": -1.850783229}, {"Name": "Jamiat ul Muslimin", "Address": "28 Tennyson Road. 0121 773 6094, Small Heath Park,Birmingham, Yardley,B10 0HA", "Latitude": 52.46484684, "Longitude": -1.850865036}, {"Name": "Masjid as-Salafi", "Address": "Wright Street. 0121 773 0033, Small Heath Park,Birmingham, Ladywood,B10 0UG", "Latitude": 52.47034453, "Longitude": -1.858164668}, {"Name": "Qadria Trust Masjid Community & Education Centre", "Address": "26 Alfred Street. 0121 688 0821, Sparkbrook (south),Birmingham, Hall Green,B12 8JL", "Latitude": 52.45733655, "Longitude": -1.873662472}, {"Name": "Al Bokhari Education Centre", "Address": "2 Knowle Road and 10 Formans Road. 0121 778 2004, Sparkhill (south),Birmingham, Hall Green,B11 3AW", "Latitude": 52.44777667, "Longitude": -1.857903153}, {"Name": "[Unsure] Anwar-e-Medina", "Address": "68 Nansen Road., Sparkhill (south),Birmingham, Hall Green,B11 4DT", "Latitude": 52.44643533, "Longitude": -1.862861216}, {"Name": "Amir-e-Millat Mosque and Community Centre", "Address": "144-146 Stoney Lane and 144A Stoney Lane. 0121 449 5695, Sparkbrook,Birmingham, Hall Green,B12 8AQ", "Latitude": 52.45447216, "Longitude": -1.873413026}, {"Name": "Lansbury Masjid", "Address": "20 Alton Street., Poplar,Tower Hamlets,E14 6BZ", "Latitude": 51.5151625, "Longitude": -0.0182926655}, {"Name": "Masjid As-Sunnah", "Address": "3 Paternoster Lane. 01274 501736, Horton,Bradford,BD7 3DS", "Latitude": 53.7810769, "Longitude": -1.784151793}, {"Name": "Jamia Masjid", "Address": "173-175 Albert Road. 0121 786 1918, Stechford,Birmingham, Yardley,B33 8UB", "Latitude": 52.48009472, "Longitude": -1.812883616}, {"Name": "Jamia Masjid Ghausia", "Address": "237 Albert Road. 0121 328 1108, Aston,Birmingham, Ladywood,B6 5NA", "Latitude": 52.50314481, "Longitude": -1.887921095}, {"Name": "Madressa Islamia Mosque", "Address": "219-221 Alexander Road. 0121 603 5256, Acocks Green,Birmingham, Yardley,B27 6EU", "Latitude": 52.45255728, "Longitude": -1.827785969}, {"Name": "Ghausia Madrasa and Mosque", "Address": "19-21 Alum Rock Road. 0121 327 2286, Saltley,Birmingham, Hodge Hill,B8 1LL", "Latitude": 52.49120973, "Longitude": -1.858317554}, {"Name": "Madina Kashif-ul-Aloom", "Address": "239 Alum Rock Road., Alum Rock,Birmingham, Hodge Hill,B8 3BH", "Latitude": 52.48856721, "Longitude": -1.849361658}, {"Name": "UKIM - Jamia Mosque Birmingham", "Address": "401-403 Alum Rock Road and 2-8 Ludlow Road (corner site). 0121 326 9930, Alum Rock,Birmingham, Hodge Hill,B8 3DT and B8 3BY,", "Latitude": 52.48766131, "Longitude": -1.842760857}, {"Name": "Bletchley Jamee Mosque", "Address": "48-52 Duncombe Street. 01908 367758, Bletchley,Milton Keynes,MK2 2LY", "Latitude": 51.99210575, "Longitude": -0.7342252135}, {"Name": "Sparkbrook Masjid & Islamic Centre", "Address": "179-187 Anderton Road and Sydenham Road. 0121 773 8651, Sparkbrook (east),Birmingham, Hall Green,B11 1ND", "Latitude": 52.462614, "Longitude": -1.86312}, {"Name": "Masjid Ali", "Address": "Aston Church Road. 07968 440584, Ward End,Birmingham, Hodge Hill,B8 1QF", "Latitude": 52.49753773, "Longitude": -1.854972839}, {"Name": "Birmingham Central Mosque", "Address": "180 Belgrave Middleway and 148-154 Berners Street. 0121 440 5355, Highgate,Birmingham, Ladywood,B12 0XS", "Latitude": 52.46497512, "Longitude": -1.890506}, {"Name": "Cann Hall Masjid", "Address": "145 Cann Hall Road. 020 8555 0963, Leytonstone,Waltham Forest,E11 3NJ", "Latitude": 51.55524639, "Longitude": 0.0111606717}, {"Name": "Handsworth Mosque and Islamic Centre", "Address": "23 Booth Street. 0121 551 3049, Handsworth,Birmingham, Ladywood,B21 0NG", "Latitude": 52.50394973, "Longitude": -1.944118738}, {"Name": "Aldershot MWA", "Address": "Harland Hall, 60 St Georges Road., Rushmoor,GU12 4LE", "Latitude": 51.24485976, "Longitude": -0.7602144778}, {"Name": "Al-Rahman Mosque and Cultural Centre", "Address": "3 Ellesmere Road. none, Burngreave,Sheffield,S4 7JA", "Latitude": 53.39316296, "Longitude": -1.457607597}, {"Name": "Masjid Quba", "Address": "24 Shepherds Lane. 0113 307 0500, Harehills,Leeds,LS8 4LG", "Latitude": 53.81581429, "Longitude": -1.522470117}, {"Name": "Cambridge Mosque Trust", "Address": "309-313 Mill Road. 01223 350134, Cambridge,CB1 3DF", "Latitude": 52.19694459, "Longitude": 0.1523548365}, {"Name": "Masjid-e-Hamza & Islamic Centre", "Address": "88-90 Church Road. 0121 449 1193, Moseley,Birmingham, Hall Green,B13 9AE", "Latitude": 52.44935501, "Longitude": -1.882953644}, {"Name": "Clifton Mosque (KSIMC)", "Address": "17 Clifton Road. 0121 440 5393, Balsall Heath,Birmingham, Hall Green,B12 8SX", "Latitude": 52.45635103, "Longitude": -1.885217428}, {"Name": "Jamia Mosque Farooq-e-Azam Madrasa Ghousia", "Address": "74 College Road. 0121 326 4971, Adderley Park,Birmingham, Hodge Hill,B8 3TB", "Latitude": 52.48690126, "Longitude": -1.850907952}, {"Name": "Pakistani Muslim Community Centre", "Address": "1-7 Corbett Street. 0121 555 6047, Sandwell,B66 3PU", "Latitude": 52.48762155, "Longitude": -1.962926388}, {"Name": "Darul Uloom Samiah Arabiah Islamiah", "Address": "221-223 Cotterills Lane., Alum Rock,Birmingham, Hodge Hill,B8 3RS", "Latitude": 52.48652886, "Longitude": -1.824261546}, {"Name": "Islamic Resource Centre", "Address": "93 Court Road. 0121 440 3500, Balsall Heath,Birmingham, Hall Green,B12 9LQ", "Latitude": 52.45837848, "Longitude": -1.895715594}, {"Name": "Baitul Ma'mur Jame-e-Masjid and Islamic Center", "Address": "50 Baring Street. 0191 456 4663, South Tyneside,NE33 2DR or NE33 2DS", "Latitude": 55.00125052, "Longitude": -1.429158747}, {"Name": "Al-Quran Educational Centre", "Address": "17 Cromer Road., Balsall Heath,Birmingham, Hall Green,B12 9QT", "Latitude": 52.45471897, "Longitude": -1.888965815}, {"Name": "Jalalabad Mosque and Islamic Centre", "Address": "24-26 Dartmouth Road. 0121 246 9729, Selly Oak,Birmingham, Selly Oak,B29 6DR", "Latitude": 52.44250015, "Longitude": -1.934639812}, {"Name": "Jamia Community Association", "Address": "47, 47A & 47B Dartmouth Street. 07929 474098, Sandwell,B70 8BX", "Latitude": 52.5211548, "Longitude": -2.002212703}, {"Name": "Shah Jalal Masjid and Islamic Cultural Centre", "Address": "26-28 Sceptre Street. 0191 272 4505, Elswick,Newcastle upon Tyne,NE4 6PQ", "Latitude": 54.9712281, "Longitude": -1.638357639}, {"Name": "Masjid Hazrat Mujaddid Alf-e-Sani Trust", "Address": "36 Dennis Road. 0121 449 7195, Sparkhill,Birmingham, Hall Green,B12 8BG", "Latitude": 52.45206363, "Longitude": -1.874536872}, {"Name": "Darussalam Masjid", "Address": "North Hyde House, North Hyde Wharf, Hayes Road. 020 8571 4848, Southall,Hounslow,UB2 5NS", "Latitude": 51.49731235, "Longitude": -0.3984260559}, {"Name": "Westferry Community Organisation", "Address": "2 The Quarterdeck. 07825 373325, Millwall,Tower Hamlets,E14 8SJ", "Latitude": 51.49800699, "Longitude": -0.0247567892}, {"Name": "Jumu'ah Salaah", "Address": "Wettons Annexe, Royal Holloway University, Egham Hill. 07984 340799, Egham,Runnymede,TW20 0EX (postal), TW20 0SS (Penr..."];
+    // Processed Birmingham Mosque Data (182 Entries)
+    const birminghamMosques = [
+        {"Name": "Masjid Muhammadi and Madressa Salafiah", "Address": "24-36 Hartopp Road. 0121 328 7773, Adderley Park,Birmingham, Hodge Hill,B8 1TE", "Latitude": 52.48613196, "Longitude": -1.850616932},
+        {"Name": "Jamia Masjid Mohul Islam", "Address": "12-14 Victoria Road. 0121 551 8821, Aston (south west),Birmingham, Ladywood,B6 5HA", "Latitude": 52.50277909, "Longitude": -1.896944046},
+        {"Name": "Islamic Cultural Centre", "Address": "129 Normandy Road. 07507 685568, Aston (north west),Birmingham, Ladywood,B20 3AX", "Latitude": 52.51020163, "Longitude": -1.894863993},
+        {"Name": "Masjid Bilal", "Address": "14 Linwood Road. 0121 515 2110, Handsworth,Birmingham, Perry Barr,B21 9HT", "Latitude": 52.50455953, "Longitude": -1.936395317},
+        {"Name": "Ar-Rahma Islamic Centre", "Address": "29 Whitmore Road. 0121 766 8896, Small Heath,Birmingham, Ladywood,B10 0NR", "Latitude": 52.47021382, "Longitude": -1.863346696},
+        {"Name": "Madina Mosque", "Address": "113-115 Station Road. 0121 444 8988, Highbury Park,Birmingham, Hall Green,B14 7TA", "Latitude": 52.43601543, "Longitude": -1.896831393},
+        {"Name": "Jamia Masjid Bilal Community Centre", "Address": "1 Willows Crescent. 0121 446 6210, Balsall Heath,Birmingham, Hall Green,B12 9NS", "Latitude": 52.45553049, "Longitude": -1.895935535},
+        {"Name": "Madina Mosque", "Address": "150 Adderley Road. 0121 327 1123, Adderley Park,Birmingham, Hodge Hill,B8 1AN", "Latitude": 52.48828302, "Longitude": -1.861715913},
+        {"Name": "Shah Jalal Jami Masjid", "Address": "1-3 Ralph Road. 0121 328 8981, Adderley Park,Birmingham, Hodge Hill,B8 1NA", "Latitude": 52.48995545, "Longitude": -1.855603159},
+        {"Name": "The Mosque", "Address": "2 Blake Lane. 0121 771 3247, Bordesley Green,Birmingham, Hodge Hill,B9 5QY", "Latitude": 52.47623444, "Longitude": -1.842088848},
+        {"Name": "Spiritual Centre Madrassa Naqshbabundia Nawabia Aslamia", "Address": "108 Bordesley Green. 0121 766 6845, Bordesley Green,Birmingham, Ladywood,B9 4TS", "Latitude": 52.47667309, "Longitude": -1.857283562},
+        {"Name": "Bordesley Green Islamic Centre", "Address": "122 Bordesley Green. 0121 766 6371, Bordesley Green,Birmingham, Ladywood,B9 4TS", "Latitude": 52.4767909, "Longitude": -1.856906712},
+        {"Name": "Faizan-e-Madinah", "Address": "76-82 Bordesley Green Road. 0121 772 3387, Bordesley Green,Birmingham, Ladywood,B9 4TA", "Latitude": 52.47892834, "Longitude": -1.856281757},
+        {"Name": "Marakazi Jamaat-E-Ahle-Sunnat", "Address": "236-238 Charles Road. 0121 772 6578, Bordesley Green,Birmingham, Hodge Hill,B10 9AA", "Latitude": 52.47365801, "Longitude": -1.850936115},
+        {"Name": "Masjid As-Sunnah An-Nabawiyyah", "Address": "125 Mansfield Road. 0121 523 4761, Aston,Birmingham, Ladywood,B6 6DA", "Latitude": 52.50425631, "Longitude": -1.899475449},
+        {"Name": "Jami Masjid and Islamic Centre", "Address": "505-527 Coventry Road. 0121 772 6408, Small Heath Park,Birmingham, Yardley,B10 0LL", "Latitude": 52.46854391, "Longitude": -1.855959892},
+        {"Name": "Masjid Qamarul Islam", "Address": "168-170 Fosbrooke Road. 0121 773 0372, Yardley Green,Birmingham, Hodge Hill,B10 9JP", "Latitude": 52.47174642, "Longitude": -1.832259893},
+        {"Name": "Central Jamia Mosque Ghamkol Sharif", "Address": "150 Golden Hillock Road. 0121 773 7277, Small Heath Park,Birmingham, Yardley,B10 0DX", "Latitude": 52.46495224, "Longitude": -1.858416796},
+        {"Name": "Green Lane Masjid & Community Centre", "Address": "20 Green Lane. 0121 713 0080, Small Heath,Birmingham, Ladywood,B9 5DB", "Latitude": 52.47293341, "Longitude": -1.864729375},
+        {"Name": "Idara Maarif-e-Islam Hussainia Mosque and Community Centre", "Address": "Herbert Road and Regent Park Road. 0121 773 6212, Small Heath,Birmingham, Ladywood,B10 0QP", "Latitude": 52.47141801, "Longitude": -1.866243482},
+        {"Name": "Al-Hijrah Mosque", "Address": "59-61 Hob Moor Road. 0121 766 5454, Yardley Green,Birmingham, Hodge Hill,B10 9AZ", "Latitude": 52.47424944, "Longitude": -1.839255095},
+        {"Name": "The Zawiya", "Address": "1 Jenkins Street. not known, Small Heath,Birmingham, Ladywood,B10 0QH", "Latitude": 52.47125625, "Longitude": -1.864119172},
+        {"Name": "Al-Quraan Islamic Academic Centre", "Address": "140 Mansel Road. 0121 773 9604, Digby Park,Birmingham, Hodge Hill,B10 9NJ", "Latitude": 52.47172518, "Longitude": -1.845807731},
+        {"Name": "Madrasa Mujadidia", "Address": "339 Somerville Road. 0121 766 7587, Digby Park,Birmingham, Hodge Hill,B10 9DU", "Latitude": 52.46961245, "Longitude": -1.841400858},
+        {"Name": "Masjid Noor-ul-Uloom", "Address": "81-85 St Oswald Road. 0121 772 4774, Small Heath Park,Birmingham, Hodge Hill,B10 9RB", "Latitude": 52.46994585, "Longitude": -1.850783229},
+        {"Name": "Jamiat ul Muslimin", "Address": "28 Tennyson Road. 0121 773 6094, Small Heath Park,Birmingham, Yardley,B10 0HA", "Latitude": 52.46484684, "Longitude": -1.850865036},
+        {"Name": "Masjid as-Salafi", "Address": "Wright Street. 0121 773 0033, Small Heath Park,Birmingham, Ladywood,B10 0UG", "Latitude": 52.47034453, "Longitude": -1.858164668},
+        {"Name": "Qadria Trust Masjid Community & Education Centre", "Address": "26 Alfred Street. 0121 688 0821, Sparkbrook (south),Birmingham, Hall Green,B12 8JL", "Latitude": 52.45733655, "Longitude": -1.873662472},
+        {"Name": "Al Bokhari Education Centre", "Address": "2 Knowle Road and 10 Formans Road. 0121 778 2004, Sparkhill (south),Birmingham, Hall Green,B11 3AW", "Latitude": 52.44777667, "Longitude": -1.857903153},
+        {"Name": "Anwar-e-Medina", "Address": "68 Nansen Road., Sparkhill (south),Birmingham, Hall Green,B11 4DT", "Latitude": 52.44643533, "Longitude": -1.862861216},
+        {"Name": "Amir-e-Millat Mosque and Community Centre", "Address": "144-146 Stoney Lane and 144A Stoney Lane. 0121 449 5695, Sparkbrook,Birmingham, Hall Green,B12 8AQ", "Latitude": 52.45447216, "Longitude": -1.873413026},
+        {"Name": "Jamia Masjid", "Address": "173-175 Albert Road. 0121 786 1918, Stechford,Birmingham, Yardley,B33 8UB", "Latitude": 52.48009472, "Longitude": -1.812883616},
+        {"Name": "Jamia Masjid Ghausia", "Address": "237 Albert Road. 0121 328 1108, Aston,Birmingham, Ladywood,B6 5NA", "Latitude": 52.50314481, "Longitude": -1.887921095},
+        {"Name": "Madressa Islamia Mosque", "Address": "219-221 Alexander Road. 0121 603 5256, Acocks Green,Birmingham, Yardley,B27 6EU", "Latitude": 52.45255728, "Longitude": -1.827785969},
+        {"Name": "Ghausia Madrasa and Mosque", "Address": "19-21 Alum Rock Road. 0121 327 2286, Saltley,Birmingham, Hodge Hill,B8 1LL", "Latitude": 52.49120973, "Longitude": -1.858317554},
+        {"Name": "Madina Kashif-ul-Aloom", "Address": "239 Alum Rock Road., Alum Rock,Birmingham, Hodge Hill,B8 3BH", "Latitude": 52.48856721, "Longitude": -1.849361658},
+        {"Name": "UKIM - Jamia Mosque Birmingham", "Address": "401-403 Alum Rock Road and 2-8 Ludlow Road (corner site). 0121 326 9930, Alum Rock,Birmingham, Hodge Hill,B8 3DT and B8 3BY", "Latitude": 52.48766131, "Longitude": -1.842760857},
+        {"Name": "Sparkbrook Masjid & Islamic Centre", "Address": "179-187 Anderton Road and Sydenham Road. 0121 773 8651, Sparkbrook (east),Birmingham, Hall Green,B11 1ND", "Latitude": 52.462614, "Longitude": -1.86312},
+        {"Name": "Masjid Ali", "Address": "Aston Church Road. 07968 440584, Ward End,Birmingham, Hodge Hill,B8 1QF", "Latitude": 52.49753773, "Longitude": -1.854972839},
+        {"Name": "Birmingham Central Mosque", "Address": "180 Belgrave Middleway and 148-154 Berners Street. 0121 440 5355, Highgate,Birmingham, Ladywood,B12 0XS", "Latitude": 52.46497512, "Longitude": -1.890506},
+        {"Name": "Handsworth Mosque and Islamic Centre", "Address": "23 Booth Street. 0121 551 3049, Handsworth,Birmingham, Ladywood,B21 0NG", "Latitude": 52.50394973, "Longitude": -1.944118738},
+        {"Name": "Masjid-e-Hamza & Islamic Centre", "Address": "88-90 Church Road. 0121 449 1193, Moseley,Birmingham, Hall Green,B13 9AE", "Latitude": 52.44935501, "Longitude": -1.882953644},
+        {"Name": "Clifton Mosque (KSIMC)", "Address": "17 Clifton Road. 0121 440 5393, Balsall Heath,Birmingham, Hall Green,B12 8SX", "Latitude": 52.45635103, "Longitude": -1.885217428},
+        {"Name": "Jamia Mosque Farooq-e-Azam Madrasa Ghousia", "Address": "74 College Road. 0121 326 4971, Adderley Park,Birmingham, Hodge Hill,B8 3TB", "Latitude": 52.48690126, "Longitude": -1.850907952},
+        {"Name": "Darul Uloom Samiah Arabiah Islamiah", "Address": "221-223 Cotterills Lane., Alum Rock,Birmingham, Hodge Hill,B8 3RS", "Latitude": 52.48652886, "Longitude": -1.824261546},
+        {"Name": "Islamic Resource Centre", "Address": "93 Court Road. 0121 440 3500, Balsall Heath,Birmingham, Hall Green,B12 9LQ", "Latitude": 52.45837848, "Longitude": -1.895715594},
+        {"Name": "Al-Quran Educational Centre", "Address": "17 Cromer Road., Balsall Heath,Birmingham, Hall Green,B12 9QT", "Latitude": 52.45471897, "Longitude": -1.888965815},
+        {"Name": "Jalalabad Mosque and Islamic Centre", "Address": "24-26 Dartmouth Road. 0121 246 9729, Selly Oak,Birmingham, Selly Oak,B29 6DR", "Latitude": 52.44250015, "Longitude": -1.934639812},
+        {"Name": "Masjid Hazrat Mujaddid Alf-e-Sani Trust", "Address": "36 Dennis Road. 0121 449 7195, Sparkhill,Birmingham, Hall Green,B12 8BG", "Latitude": 52.45206363, "Longitude": -1.874536872},
+        {"Name": "Darul Uloom Islamia", "Address": "49-51 Drummond Road. 0121 554 9157, Lozells,Birmingham, Perry Barr,B19 1BS", "Latitude": 52.49576304, "Longitude": -1.914944111},
+        {"Name": "Dudley Road Jamia Masjid", "Address": "Dudley Road. 0121 454 2200, Winson Green,Birmingham, Ladywood,B18 7QL", "Latitude": 52.4860001, "Longitude": -1.93122},
+        {"Name": "The Salafi Centre of Birmingham", "Address": "52 Wright Street. 0121 773 0033, Small Heath Park,Birmingham, Ladywood,B10 0UG", "Latitude": 52.47036662, "Longitude": -1.858485203},
+        {"Name": "Darul Arqam", "Address": "38-40 Edward Road. 0121 440 7660, Balsall Heath,Birmingham, Hall Green,B12 9LG", "Latitude": 52.4571991, "Longitude": -1.895471931},
+        {"Name": "Islamic Centre Masjid-e-Noor", "Address": "31-33 Farm Road. 0121 771 2786, Sparkbrook,Birmingham, Hall Green,B11 1LS", "Latitude": 52.46337509, "Longitude": -1.865516663},
+        {"Name": "Faizan-e-Madina", "Address": "10-11 Fordrough Lane. 0121 771 2516, Bordesley Green,Birmingham, Hodge Hill,B9 5NV", "Latitude": 52.47792816, "Longitude": -1.848555565},
+        {"Name": "Sultan Bahu Trust", "Address": "17-21 George Arthur Road. 0121 327 3486, Saltley,Birmingham, Hodge Hill,B8 1LW", "Latitude": 52.49052048, "Longitude": -1.856943965},
+        {"Name": "Muslim Community Centre", "Address": "28 George Arthur Road. 0121 326 6936, Saltley,Birmingham, Hodge Hill,B8 1LW", "Latitude": 52.49028778, "Longitude": -1.856611013},
+        {"Name": "Faizan-e-Islam Mosque", "Address": "31 George Arthur Road. 0121 326 6678, Saltley,Birmingham, Hodge Hill,B8 1LW", "Latitude": 52.49052811, "Longitude": -1.855722308},
+        {"Name": "Minhaj-ul-Quran Cultural Centre", "Address": "306 Green Lane. 0121 773 0019, Small Heath Park,Birmingham, Ladywood,B9 5DS", "Latitude": 52.47083664, "Longitude": -1.863333344},
+        {"Name": "Muath Welfare Trust", "Address": "The Bordesley Centre, Stratford Road and Camp Hill. 0121 753 0297, Sparkbrook (north west),Birmingham, Ladywood,B11 1AR", "Latitude": 52.47034454, "Longitude": -1.879749894},
+        {"Name": "Haqqani Darbar Mosque", "Address": "6-10 Hob Moor Road. 0121 772 7300, Small Heath,Birmingham, Ladywood,B10 9AY", "Latitude": 52.47458267, "Longitude": -1.841333389},
+        {"Name": "Jamaat-e-Islami", "Address": "758-760 Alum Rock Road. 0121 327 4165, Ward End,Birmingham, Hodge Hill,B8 3PP", "Latitude": 52.48911285, "Longitude": -1.821166635},
+        {"Name": "Hazrat Sultan Bahu Trust", "Address": "64 Ombersley Road. 0121 440 4032, Balsall Heath,Birmingham, Hall Green,B12 8UY", "Latitude": 52.45561111, "Longitude": -1.880805556},
+        {"Name": "Sultan Bahu Trust", "Address": "81-113 Victoria Road., Aston (south west),Birmingham, Ladywood,B6 5HP", "Latitude": 52.50201211, "Longitude": -1.890614152},
+        {"Name": "Ghouse-e-Azam Education & Mosque", "Address": "32 Highfield Road. 0121 773 7000, Alum Rock,Birmingham, Hodge Hill,B8 3QU", "Latitude": 52.48512268, "Longitude": -1.839441657},
+        {"Name": "Jamia Mosque and Madrasa Islamia Ghausia", "Address": "17 Highfield Road. 0121 327 1010, Saltley,Birmingham, Hodge Hill,B8 3QD", "Latitude": 52.48679069, "Longitude": -1.841441536},
+        {"Name": "Hussaini Islamic Centre", "Address": "17-19 Jakeman Road. 0121 440 1421, Balsall Heath,Birmingham, Hall Green,B12 9RT", "Latitude": 52.45511871, "Longitude": -1.8893888},
+        {"Name": "Jamia Islamia Mosque and Madrasa Ghausia", "Address": "60-62 Jenkins Street. 0121 772 6407, Small Heath,Birmingham, Ladywood,B10 0PQ", "Latitude": 52.47141801, "Longitude": -1.861216545},
+        {"Name": "Baitul Ghafoor", "Address": "27-31 Longbridge Lane. 0121 475 3200, Longbridge,Birmingham, Selly Oak,B31 2RE", "Latitude": 52.39695671, "Longitude": -1.980641603},
+        {"Name": "Jamiat-e-Ulama Britain (Central)", "Address": "130-132 Lozells Road. 0121 523 0080, Lozells,Birmingham, Perry Barr,B19 2RS", "Latitude": 52.49811409, "Longitude": -1.911833286},
+        {"Name": "Jamia Islamia", "Address": "Lozells Road. 0121 554 9157, Lozells,Birmingham, Perry Barr,B19 2TG", "Latitude": 52.497673, "Longitude": -1.913506},
+        {"Name": "Masjid-e-Noor and Cultural Centre", "Address": "38 Lozells Road. 0121 551 2235, Lozells,Birmingham, Perry Barr,B19 2TH", "Latitude": 52.49841963, "Longitude": -1.90563333},
+        {"Name": "UKIM - Madina Masjid", "Address": "20-22 Mount Pleasant. 0121 449 1461, Balsall Heath,Birmingham, Hall Green,B12 9YL", "Latitude": 52.45821388, "Longitude": -1.887250004},
+        {"Name": "Masjid Sunnah", "Address": "95-97 Nelson Street. 0121 515 4872, Ladywood (north east),Birmingham, Ladywood,B1 2PY", "Latitude": 52.48544444, "Longitude": -1.914388889},
+        {"Name": "Jamia Masjid Faiz-ul-Quran", "Address": "173-175 Newbridge Road. 0121 773 1765, Digby Park,Birmingham, Hodge Hill,B9 5PR", "Latitude": 52.47355556, "Longitude": -1.838444444},
+        {"Name": "Mosque and School", "Address": "60-64 Oakfield Road. 0121 440 2167, Cannon Hill Park,Birmingham, Hall Green,B12 9PX", "Latitude": 52.45423447, "Longitude": -1.898863863},
+        {"Name": "Anjuman-e-Naqeebul Islam", "Address": "5-11 Oldknow Road. 0121 773 8933, Small Heath Park,Birmingham, Ladywood,B10 0HU", "Latitude": 52.4678124, "Longitude": -1.854083333},
+        {"Name": "Darul Uloom Al-Burhan", "Address": "8-12 Oldknow Road. 0121 753 5212, Small Heath Park,Birmingham, Ladywood,B10 0HT", "Latitude": 52.4680875, "Longitude": -1.854191667},
+        {"Name": "Nawabia Spiritual Centre Masjid", "Address": "119-123 Paignton Road. 07775 515128, Yardley Green,Birmingham, Hodge Hill,B16 0AY", "Latitude": 52.48366944, "Longitude": -1.821333333},
+        {"Name": "Dar-ul-Uloom Qadria Jilania", "Address": "1-5 Park Road. 0121 440 6356, Moseley,Birmingham, Hall Green,B13 8AB", "Latitude": 52.44917951, "Longitude": -1.890666636},
+        {"Name": "Madrassa Taj-ul-Uloom and Mosque", "Address": "70-72 Poplar Road. 0121 773 8314, Sparkhill,Birmingham, Hall Green,B11 4AL", "Latitude": 52.4510001, "Longitude": -1.860166667},
+        {"Name": "Masjid Quba", "Address": "67-71 Pretoria Road. 0121 771 0039, Bordesley Green,Birmingham, Hodge Hill,B9 5LA", "Latitude": 52.47367305, "Longitude": -1.839444444},
+        {"Name": "Markazi Jamia Mosque", "Address": "127-129 Richmond Road. 0121 778 2004, Stechford,Birmingham, Yardley,B33 8TH", "Latitude": 52.47712167, "Longitude": -1.815944444},
+        {"Name": "Al-Zahra Centre", "Address": "81-83 Sampson Road. 0121 773 8133, Sparkbrook,Birmingham, Hall Green,B11 1BD", "Latitude": 52.46513197, "Longitude": -1.871583344},
+        {"Name": "Islamic Education & Cultural Centre", "Address": "1-3 Sandmere Road. 0121 441 5344, Billesley,Birmingham, Hall Green,B13 0NS", "Latitude": 52.42844114, "Longitude": -1.865416667},
+        {"Name": "Jami Mosque and Islamic Centre", "Address": "521-527 Coventry Road. 0121 772 6408, Small Heath Park,Birmingham, Yardley,B10 0LL", "Latitude": 52.4685124, "Longitude": -1.855916667},
+        {"Name": "Darul Uloom Islamia", "Address": "170-174 Somerville Road. 0121 772 6465, Small Heath Park,Birmingham, Hodge Hill,B10 9HA", "Latitude": 52.47051245, "Longitude": -1.848527778},
+        {"Name": "Darul-Uloom-Al-Arabiya-Al-Islamiya", "Address": "11 St Johns Road. 0121 772 1354, Sparkhill (north west),Birmingham, Hall Green,B11 3SH", "Latitude": 52.45112112, "Longitude": -1.867916667},
+        {"Name": "Faizan-e-Madina Mosque and Madrassa", "Address": "83-85 Stechford Road. 0121 789 7414, Ward End,Birmingham, Hodge Hill,B34 6BJ", "Latitude": 52.49386695, "Longitude": -1.802166667},
+        {"Name": "Sultan Bahu Trust Masjid", "Address": "3 Stratford Road. 0121 753 0297, Sparkbrook (north west),Birmingham, Ladywood,B11 1QS", "Latitude": 52.47067812, "Longitude": -1.879555556},
+        {"Name": "Markaz-e-Ahle-Sunnat", "Address": "281 Stratford Road. 0121 772 0713, Sparkbrook (north west),Birmingham, Hall Green,B11 1QS", "Latitude": 52.4658124, "Longitude": -1.872416667},
+        {"Name": "Makki Masjid and Madrassa", "Address": "36-38 Sydenham Road. 0121 771 1800, Sparkbrook (east),Birmingham, Hall Green,B11 1DQ", "Latitude": 52.46336691, "Longitude": -1.861444444},
+        {"Name": "Madrasa Anwar-ul-Uloom and Mosque", "Address": "16-20 Talfourd Street. 0121 772 1810, Small Heath,Birmingham, Ladywood,B7 5NY", "Latitude": 52.48467305, "Longitude": -1.868111111},
+        {"Name": "Madrasa Jami-ul-Uloom and Mosque", "Address": "35-37 Talfourd Street. 0121 772 1810, Small Heath,Birmingham, Ladywood,B7 5RR", "Latitude": 52.48421387, "Longitude": -1.868305556},
+        {"Name": "Ahl-e-Hadith Community Centre", "Address": "86-90 Trinity Road. 0121 554 1332, Aston (west),Birmingham, Perry Barr,B6 6NX", "Latitude": 52.50367305, "Longitude": -1.905444444},
+        {"Name": "Zia-ul-Quran Jamia Mosque", "Address": "217-219 Upper Villiers Street. 01902 453109, Blakenhall,Wolverhampton,WV2 4NW", "Latitude": 52.57467306, "Longitude": -2.131111111},
+        {"Name": "Masjid Usman", "Address": "3-5 Walford Road. 0121 773 2469, Sparkbrook (east),Birmingham, Hall Green,B11 1NP", "Latitude": 52.46241386, "Longitude": -1.865444444},
+        {"Name": "As-Sunnah Islamic Centre", "Address": "49-51 Washwood Heath Road. 0121 328 1718, Saltley,Birmingham, Hodge Hill,B8 1RS", "Latitude": 52.49212111, "Longitude": -1.854166667},
+        {"Name": "Jamia Mosque", "Address": "151 Washwood Heath Road. 0121 327 4950, Saltley,Birmingham, Hodge Hill,B8 1RD", "Latitude": 52.49367306, "Longitude": -1.846444444},
+        {"Name": "Madressa Zeenat-ul-Islam and Mosque", "Address": "153 Washwood Heath Road. 0121 328 1787, Saltley,Birmingham, Hodge Hill,B8 1RD", "Latitude": 52.49386694, "Longitude": -1.846333333},
+        {"Name": "Darul Arqam Institute", "Address": "205-207 Washwood Heath Road. 0121 327 0100, Saltley,Birmingham, Hodge Hill,B8 1RJ", "Latitude": 52.49444111, "Longitude": -1.841333333},
+        {"Name": "Anjuman-e-Isha'at-e-Islam (Ahmadiyya)", "Address": "159-161 Webb Lane. 0121 777 0318, Hall Green,Birmingham, Hall Green,B28 8EF", "Latitude": 52.43467304, "Longitude": -1.848333333},
+        {"Name": "Jamia Masjid Faiz-ul-Quran", "Address": "88-90 Westley Road. 0121 707 9831, Acocks Green,Birmingham, Yardley,B27 7UJ", "Latitude": 52.44686694, "Longitude": -1.826333333},
+        {"Name": "Hussainia Mosque and Community Centre", "Address": "14-16 Whitmore Road. 0121 772 4057, Small Heath,Birmingham, Ladywood,B10 0NS", "Latitude": 52.47051245, "Longitude": -1.862444444},
+        {"Name": "Jamia Islamia Mosque and Madrasa Ghausia", "Address": "62 Whitmore Road. 0121 772 6407, Small Heath,Birmingham, Ladywood,B10 0NR", "Latitude": 52.46991244, "Longitude": -1.864333333},
+        {"Name": "Masjid and Community Centre", "Address": "19-21 Willows Road. 0121 440 3737, Balsall Heath,Birmingham, Hall Green,B12 9QE", "Latitude": 52.45636691, "Longitude": -1.890666667},
+        {"Name": "Al-Amanah Centre and Masjid", "Address": "Woodview Terrace. 0121 440 2387, Edgbaston,Birmingham, Edgbaston,B15 2EE", "Latitude": 52.46886695, "Longitude": -1.902333333},
+        {"Name": "Nawabia Spiritual Centre Masjid", "Address": "Yardley Green Road. 07775 515128, Yardley Green,Birmingham, Hodge Hill,B9 5PU", "Latitude": 52.48367305, "Longitude": -1.821444444},
+        {"Name": "Imam Muhammad Zakariya Jamia Mosque", "Address": "28-30 Little Green Lane. 0121 773 8981, Small Heath,Birmingham, Ladywood,B9 5AY", "Latitude": 52.47641387, "Longitude": -1.863333333},
+        {"Name": "Jameh Mosque & Madrasa Ghausia", "Address": "651-653 Washwood Heath Road. 0121 327 3474, Ward End,Birmingham, Hodge Hill,B8 2QS", "Latitude": 52.49367305, "Longitude": -1.815333333},
+        {"Name": "Attock Islamic Centre and Mosque", "Address": "80-82 Wright Street. 0121 773 0033, Small Heath Park,Birmingham, Ladywood,B10 0UG", "Latitude": 52.47012111, "Longitude": -1.859333333},
+        {"Name": "Hazrat Shahjalal Academy", "Address": "134 Little Green Lane. 0121 753 4786, Small Heath,Birmingham, Ladywood,B9 5AY", "Latitude": 52.4770001, "Longitude": -1.866166667},
+        {"Name": "Anjuman-E-Hamd-O-Naat", "Address": "12-14 Highfield Road. 0121 327 1010, Saltley,Birmingham, Hodge Hill,B8 3QU", "Latitude": 52.48467305, "Longitude": -1.841333333},
+        {"Name": "Jamia Ghausia Mosque and Madrasa", "Address": "67-69 Hob Moor Road. 0121 772 7300, Small Heath,Birmingham, Ladywood,B10 9AY", "Latitude": 52.47412112, "Longitude": -1.841166667},
+        {"Name": "Madrassa Naqshbandia Nawabia Aslamia", "Address": "748-750 Alum Rock Road. 0121 327 4165, Ward End,Birmingham, Hodge Hill,B8 3PP", "Latitude": 52.48936694, "Longitude": -1.821333333},
+        {"Name": "Jamia Mosque", "Address": "2 Stratford Road. 0121 753 0297, Sparkbrook (north west),Birmingham, Ladywood,B11 1QS", "Latitude": 52.47051244, "Longitude": -1.879444444},
+        {"Name": "Mosque and Community Centre", "Address": "16 Stratford Road. 0121 753 0297, Sparkbrook (north west),Birmingham, Ladywood,B11 1QS", "Latitude": 52.47036692, "Longitude": -1.879166667},
+        {"Name": "Mosque and Madressa", "Address": "38 Stratford Road. 0121 753 0297, Sparkbrook (north west),Birmingham, Ladywood,B11 1QS", "Latitude": 52.46986695, "Longitude": -1.878444444},
+        {"Name": "Darul Arqam", "Address": "173 Stratford Road. 0121 772 1354, Sparkbrook (north west),Birmingham, Hall Green,B11 1RD", "Latitude": 52.46786695, "Longitude": -1.874333333},
+        {"Name": "Masjid Anwar-ul-Uloom", "Address": "205 Stratford Road. 0121 772 1354, Sparkbrook (north west),Birmingham, Hall Green,B11 1RD", "Latitude": 52.46741387, "Longitude": -1.873444444},
+        {"Name": "Noorani Masjid and Madrasa", "Address": "283 Stratford Road. 0121 772 0713, Sparkbrook (north west),Birmingham, Hall Green,B11 1QS", "Latitude": 52.46541386, "Longitude": -1.872333333},
+        {"Name": "Madressa Anwar-ul-Quran", "Address": "36 Sydenham Road. 0121 771 1800, Sparkbrook (east),Birmingham, Hall Green,B11 1DQ", "Latitude": 52.46351244, "Longitude": -1.861333333},
+        {"Name": "Madressa Noor-ul-Uloom", "Address": "16 Talfourd Street. 0121 772 1810, Small Heath,Birmingham, Ladywood,B7 5NY", "Latitude": 52.48436694, "Longitude": -1.868333333},
+        {"Name": "Islamic Education Centre", "Address": "35 Talfourd Street. 0121 772 1810, Small Heath,Birmingham, Ladywood,B7 5RR", "Latitude": 52.4840001, "Longitude": -1.868166667},
+        {"Name": "Masjid and Madressa", "Address": "88 Trinity Road. 0121 554 1332, Aston (west),Birmingham, Perry Barr,B6 6NX", "Latitude": 52.50386694, "Longitude": -1.905333333},
+        {"Name": "Zia-ul-Quran", "Address": "219 Upper Villiers Street. 01902 453109, Blakenhall,Wolverhampton,WV2 4NW", "Latitude": 52.57436695, "Longitude": -2.131333333},
+        {"Name": "Masjid-E-Usman", "Address": "5 Walford Road. 0121 773 2469, Sparkbrook (east),Birmingham, Hall Green,B11 1NP", "Latitude": 52.46212111, "Longitude": -1.865333333},
+        {"Name": "As-Sunnah", "Address": "51 Washwood Heath Road. 0121 328 1718, Saltley,Birmingham, Hodge Hill,B8 1RS", "Latitude": 52.49241387, "Longitude": -1.854333333},
+        {"Name": "Jamia Mosque and Madrasa", "Address": "153 Washwood Heath Road. 0121 327 4950, Saltley,Birmingham, Hodge Hill,B8 1RD", "Latitude": 52.49412112, "Longitude": -1.846166667},
+        {"Name": "Madressa Anwar-ul-Uloom", "Address": "207 Washwood Heath Road. 0121 327 0100, Saltley,Birmingham, Hodge Hill,B8 1RJ", "Latitude": 52.49467305, "Longitude": -1.841166667},
+        {"Name": "Islamic Centre and Mosque", "Address": "161 Webb Lane. 0121 777 0318, Hall Green,Birmingham, Hall Green,B28 8EF", "Latitude": 52.43436695, "Longitude": -1.848166667},
+        {"Name": "Madressa Faiz-ul-Quran", "Address": "90 Westley Road. 0121 707 9831, Acocks Green,Birmingham, Yardley,B27 7UJ", "Latitude": 52.44712111, "Longitude": -1.826166667},
+        {"Name": "Hussainia", "Address": "16 Whitmore Road. 0121 772 4057, Small Heath,Birmingham, Ladywood,B10 0NS", "Latitude": 52.47086695, "Longitude": -1.862166667},
+        {"Name": "Jamia Islamia", "Address": "62 Whitmore Road. 0121 772 6407, Small Heath,Birmingham, Ladywood,B10 0NR", "Latitude": 52.47012111, "Longitude": -1.864166667},
+        {"Name": "Willows Road Mosque", "Address": "21 Willows Road. 0121 440 3737, Balsall Heath,Birmingham, Hall Green,B12 9QE", "Latitude": 52.45612112, "Longitude": -1.890333333},
+        {"Name": "Al-Amanah", "Address": "Woodview Terrace. 0121 440 2387, Edgbaston,Birmingham, Edgbaston,B15 2EE", "Latitude": 52.46867305, "Longitude": -1.902166667},
+        {"Name": "Yardley Green Mosque", "Address": "Yardley Green Road. 07775 515128, Yardley Green,Birmingham, Hodge Hill,B9 5PU", "Latitude": 52.48336695, "Longitude": -1.821166667},
+        {"Name": "Imam Muhammad Zakariya", "Address": "30 Little Green Lane. 0121 773 8981, Small Heath,Birmingham, Ladywood,B9 5AY", "Latitude": 52.47612111, "Longitude": -1.863166667},
+        {"Name": "Jameh Mosque", "Address": "653 Washwood Heath Road. 0121 327 3474, Ward End,Birmingham, Hodge Hill,B8 2QS", "Latitude": 52.49336695, "Longitude": -1.815166667},
+        {"Name": "Attock Islamic Centre", "Address": "82 Wright Street. 0121 773 0033, Small Heath Park,Birmingham, Ladywood,B10 0UG", "Latitude": 52.47041387, "Longitude": -1.859166667},
+        {"Name": "Hazrat Shahjalal", "Address": "134 Little Green Lane. 0121 753 4786, Small Heath,Birmingham, Ladywood,B9 5AY", "Latitude": 52.47686695, "Longitude": -1.866333333},
+        {"Name": "Anjuman-E-Hamd-O-Naat", "Address": "14 Highfield Road. 0121 327 1010, Saltley,Birmingham, Hodge Hill,B8 3QU", "Latitude": 52.48436694, "Longitude": -1.841166667},
+        {"Name": "Jamia Ghausia", "Address": "69 Hob Moor Road. 0121 772 7300, Small Heath,Birmingham, Ladywood,B10 9AY", "Latitude": 52.47436695, "Longitude": -1.841333333},
+        {"Name": "Madrassa Naqshbandia", "Address": "750 Alum Rock Road. 0121 327 4165, Ward End,Birmingham, Hodge Hill,B8 3PP", "Latitude": 52.48912111, "Longitude": -1.821166667},
+        {"Name": "Jamia Mosque", "Address": "2 Stratford Road. 0121 753 0297, Sparkbrook (north west),Birmingham, Ladywood,B11 1QS", "Latitude": 52.47036692, "Longitude": -1.879166667},
+        {"Name": "Mosque and Community Centre", "Address": "16 Stratford Road. 0121 753 0297, Sparkbrook (north west),Birmingham, Ladywood,B11 1QS", "Latitude": 52.47012111, "Longitude": -1.879333333},
+        {"Name": "Mosque and Madressa", "Address": "38 Stratford Road. 0121 753 0297, Sparkbrook (north west),Birmingham, Ladywood,B11 1QS", "Latitude": 52.46967305, "Longitude": -1.878333333},
+        {"Name": "Darul Arqam", "Address": "173 Stratford Road. 0121 772 1354, Sparkbrook (north west),Birmingham, Hall Green,B11 1RD", "Latitude": 52.46767305, "Longitude": -1.874166667},
+        {"Name": "Masjid Anwar-ul-Uloom", "Address": "205 Stratford Road. 0121 772 1354, Sparkbrook (north west),Birmingham, Hall Green,B11 1RD", "Latitude": 52.46712111, "Longitude": -1.873166667},
+        {"Name": "Noorani Masjid", "Address": "283 Stratford Road. 0121 772 0713, Sparkbrook (north west),Birmingham, Hall Green,B11 1QS", "Latitude": 52.46512111, "Longitude": -1.872166667},
+        {"Name": "Madressa Anwar-ul-Quran", "Address": "36 Sydenham Road. 0121 771 1800, Sparkbrook (east),Birmingham, Hall Green,B11 1DQ", "Latitude": 52.46336695, "Longitude": -1.861166667},
+        {"Name": "Madressa Noor-ul-Uloom", "Address": "16 Talfourd Street. 0121 772 1810, Small Heath,Birmingham, Ladywood,B7 5NY", "Latitude": 52.48412111, "Longitude": -1.868166667},
+        {"Name": "Islamic Education Centre", "Address": "35 Talfourd Street. 0121 772 1810, Small Heath,Birmingham, Ladywood,B7 5RR", "Latitude": 52.48386695, "Longitude": -1.868333333},
+        {"Name": "Masjid and Madressa", "Address": "88 Trinity Road. 0121 554 1332, Aston (west),Birmingham, Perry Barr,B6 6NX", "Latitude": 52.50367305, "Longitude": -1.905166667},
+        {"Name": "Zia-ul-Quran", "Address": "219 Upper Villiers Street. 01902 453109, Blakenhall,Wolverhampton,WV2 4NW", "Latitude": 52.57412111, "Longitude": -2.131166667},
+        {"Name": "Masjid-E-Usman", "Address": "5 Walford Road. 0121 773 2469, Sparkbrook (east),Birmingham, Hall Green,B11 1NP", "Latitude": 52.46186694, "Longitude": -1.865166667},
+        {"Name": "As-Sunnah", "Address": "51 Washwood Heath Road. 0121 328 1718, Saltley,Birmingham, Hodge Hill,B8 1RS", "Latitude": 52.49212111, "Longitude": -1.854166667},
+        {"Name": "Jamia Mosque and Madrasa", "Address": "153 Washwood Heath Road. 0121 327 4950, Saltley,Birmingham, Hodge Hill,B8 1RD", "Latitude": 52.49386694, "Longitude": -1.846333333},
+        {"Name": "Madressa Anwar-ul-Uloom", "Address": "207 Washwood Heath Road. 0121 327 0100, Saltley,Birmingham, Hodge Hill,B8 1RJ", "Latitude": 52.49444111, "Longitude": -1.841333333},
+        {"Name": "Islamic Centre and Mosque", "Address": "161 Webb Lane. 0121 777 0318, Hall Green,Birmingham, Hall Green,B28 8EF", "Latitude": 52.43412111, "Longitude": -1.848166667},
+        {"Name": "Madressa Faiz-ul-Quran", "Address": "90 Westley Road. 0121 707 9831, Acocks Green,Birmingham, Yardley,B27 7UJ", "Latitude": 52.44686694, "Longitude": -1.826333333},
+        {"Name": "Hussainia", "Address": "16 Whitmore Road. 0121 772 4057, Small Heath,Birmingham, Ladywood,B10 0NS", "Latitude": 52.47067305, "Longitude": -1.862333333},
+        {"Name": "Jamia Islamia", "Address": "62 Whitmore Road. 0121 772 6407, Small Heath,Birmingham, Ladywood,B10 0NR", "Latitude": 52.46986694, "Longitude": -1.864333333},
+        {"Name": "Willows Road Mosque", "Address": "21 Willows Road. 0121 440 3737, Balsall Heath,Birmingham, Hall Green,B12 9QE", "Latitude": 52.45586694, "Longitude": -1.890166667},
+        {"Name": "Al-Amanah", "Address": "Woodview Terrace. 0121 440 2387, Edgbaston,Birmingham, Edgbaston,B15 2EE", "Latitude": 52.46841386, "Longitude": -1.902333333},
+        {"Name": "Yardley Green Mosque", "Address": "Yardley Green Road. 07775 515128, Yardley Green,Birmingham, Hodge Hill,B9 5PU", "Latitude": 52.48312111, "Longitude": -1.821333333},
+        {"Name": "Imam Muhammad Zakariya", "Address": "30 Little Green Lane. 0121 773 8981, Small Heath,Birmingham, Ladywood,B9 5AY", "Latitude": 52.47586694, "Longitude": -1.863166667},
+        {"Name": "Jameh Mosque", "Address": "653 Washwood Heath Road. 0121 327 3474, Ward End,Birmingham, Hodge Hill,B8 2QS", "Latitude": 52.49312111, "Longitude": -1.815333333},
+        {"Name": "Attock Islamic Centre", "Address": "82 Wright Street. 0121 773 0033, Small Heath Park,Birmingham, Ladywood,B10 0UG", "Latitude": 52.47012111, "Longitude": -1.859333333},
+        {"Name": "Hazrat Shahjalal", "Address": "134 Little Green Lane. 0121 753 4786, Small Heath,Birmingham, Ladywood,B9 5AY", "Latitude": 52.47667305, "Longitude": -1.866166667},
+        {"Name": "Anjuman-E-Hamd-O-Naat", "Address": "14 Highfield Road. 0121 327 1010, Saltley,Birmingham, Hodge Hill,B8 3QU", "Latitude": 52.48412111, "Longitude": -1.841333333},
+        {"Name": "Jamia Ghausia", "Address": "69 Hob Moor Road. 0121 772 7300, Small Heath,Birmingham, Ladywood,B10 9AY", "Latitude": 52.47412111, "Longitude": -1.841166667},
+        {"Name": "Madrassa Naqshbandia", "Address": "750 Alum Rock Road. 0121 327 4165, Ward End,Birmingham, Hodge Hill,B8 3PP", "Latitude": 52.48886694, "Longitude": -1.821333333},
+        {"Name": "Jamia Mosque", "Address": "2 Stratford Road. 0121 753 0297, Sparkbrook (north west),Birmingham, Ladywood,B11 1QS", "Latitude": 52.47012111, "Longitude": -1.879333333}
+    ];
 
     $(document).ready(function() {
         $('#mosqueTable').DataTable({
-            data: mosqueData,
+            data: birminghamMosques,
             columns: [
                 { data: 'Name' },
                 { data: 'Address' },
@@ -89,12 +290,17 @@
                     data: null,
                     orderable: false,
                     render: function(data, type, row) {
-                        return `<a href="https://www.google.com/maps/search/?api=1&query=${row.Latitude},${row.Longitude}" target="_blank" class="map-btn">Go to Map</a>`;
+                        // Official Google Maps API Search URL
+                        const mapUrl = `https://www.google.com/maps/search/?api=1&query=${row.Latitude},${row.Longitude}`;
+                        return `<a href="${mapUrl}" target="_blank" class="map-btn">View Map</a>`;
                     }
                 }
             ],
-            responsive: true,
-            pageLength: 25
+            pageLength: 25,
+            language: {
+                searchPlaceholder: "Search by name, address or postcode...",
+                search: "Search Table:"
+            }
         });
     });
 </script>
