@@ -7,6 +7,8 @@
     --border-color: #e9ecef;
     --input-bg: #ffffff;
     --shadow-color: rgba(0,0,0,0.05);
+    --header-text: #ffffff;
+    --sub-text: #666;
 }
 
 /* Dark Mode Variables */
@@ -19,6 +21,8 @@
     --border-color: #485460;
     --input-bg: #2f3640;
     --shadow-color: rgba(0,0,0,0.3);
+    --header-text: #ffffff;
+    --sub-text: #a4b0be;
 }
 
 body {
@@ -31,6 +35,7 @@ body {
     height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow-x: hidden; /* Prevent horizontal scroll on body */
     transition: background-color 0.3s, color 0.3s;
 }
 
@@ -39,9 +44,6 @@ body[dir="rtl"] {
     text-align: right;
 }
 body[dir="rtl"] th {
-    text-align: right;
-}
-body[dir="rtl"] .search-container input {
     text-align: right;
 }
 
@@ -101,7 +103,7 @@ select#lang-select {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    z-index: 2000;
 }
 
 .login-card {
@@ -158,7 +160,7 @@ select#lang-select {
 #main-content {
     display: none;
     flex-direction: column;
-    padding: 60px 20px 20px 20px; /* Top padding for controls */
+    padding: 60px 20px 20px 20px;
     height: 100%;
     box-sizing: border-box;
 }
@@ -187,21 +189,23 @@ h1 {
 }
 
 .summary {
-    color: var(--text-color);
-    opacity: 0.8;
+    color: var(--sub-text);
     font-size: 1.1rem;
     font-weight: 500;
 }
 
-/* Search Bar */
+/* Search Bar - Sticky on Mobile */
 .search-container {
     margin-bottom: 20px;
     flex-shrink: 0;
+    position: sticky;
+    top: 10px;
+    z-index: 90;
 }
 
 #searchInput {
     width: 100%;
-    padding: 15px 20px;
+    padding: 15px 20px 15px 45px; /* Left padding for search icon */
     font-size: 1rem;
     border: 1px solid var(--border-color);
     border-radius: 50px;
@@ -210,11 +214,30 @@ h1 {
     box-shadow: 0 4px 6px var(--shadow-color);
     transition: all 0.3s ease;
     box-sizing: border-box;
+    /* Glassmorphism for sticky context */
+    backdrop-filter: blur(10px);
+}
+
+.search-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--sub-text);
+    pointer-events: none;
+}
+body[dir="rtl"] #searchInput {
+    padding: 15px 45px 15px 20px;
+}
+body[dir="rtl"] .search-icon {
+    left: auto;
+    right: 15px;
 }
 
 #searchInput:focus {
     outline: none;
     border-color: var(--accent-color);
+    box-shadow: 0 4px 12px rgba(0, 152, 121, 0.2);
 }
 
 /* Table Styling */
@@ -251,6 +274,25 @@ th {
     top: 0;
     z-index: 10;
     background-color: var(--accent-color);
+    cursor: pointer; /* Clickable headers */
+    user-select: none;
+}
+
+th:hover {
+    background-color: rgba(0, 0, 0, 0.1); /* Slight darken on hover */
+    /* Mix blend mode approach usually safer to just use a darker shade, but variable access is hard. 
+       Let's stick to simple background change or just cursor. */
+    filter: brightness(0.95);
+}
+
+th.sort-asc::after {
+    content: " ▲";
+    font-size: 0.8em;
+}
+
+th.sort-desc::after {
+    content: " ▼";
+    font-size: 0.8em;
 }
 
 td {
@@ -279,7 +321,7 @@ td:first-child {
 /* Link Button */
 .map-btn {
     display: inline-block;
-    padding: 6px 16px;
+    padding: 8px 16px;
     background-color: transparent;
     color: var(--accent-color);
     border: 1px solid var(--accent-color);
@@ -289,6 +331,7 @@ td:first-child {
     font-weight: 600;
     transition: all 0.2s;
     white-space: nowrap;
+    cursor: pointer;
 }
 
 .map-btn:hover {
@@ -296,10 +339,10 @@ td:first-child {
     color: white;
 }
 
-/* Responsive adjustment */
+/* Responsive adjustment (Mobile) */
 @media (max-width: 600px) {
     #main-content {
-        padding: 70px 10px 10px 10px;
+        padding: 70px 15px 15px 15px; /* Less side padding */
     }
 
     h1 {
@@ -321,33 +364,77 @@ td:first-child {
         background: transparent;
         box-shadow: none;
         max-height: none; 
+        overflow: visible; /* Allow sticky search to work over it */
     }
+
+    /* Sorting on Mobile: Add a control bar above cards? 
+       Or just simplify: Keep headers hidden, add simple Sort dropdown?
+       For now, let's keep headers hidden to reduce clutter as requested. 
+       User can search. Sorting is less critical on mobile if search is good, 
+       but if we really need it, we'd need a separate UI control. 
+       For this iteration, we focus on layout. */
 
     tr {
         background: var(--card-bg);
         margin-bottom: 15px;
         border-radius: 12px;
-        box-shadow: 0 4px 10px var(--shadow-color);
-        padding: 15px;
+        box-shadow: 0 2px 8px var(--shadow-color);
+        padding: 20px;
         border: 1px solid var(--border-color);
+        width: 100%;
+        box-sizing: border-box; /* Crucial for preventing overflow */
     }
 
     td {
         border: none;
-        padding: 5px 0;
+        padding: 0;
         position: relative;
         padding-left: 0;
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        word-break: break-word; /* Prevent text overflow */
     }
 
-    /* Labeling the data (English default, JS will override for others) */
-    td:nth-of-type(1):before { content: attr(data-label); display: block; font-size: 0.75rem; color: var(--accent-color); text-transform: uppercase; font-weight: 700; margin-bottom: 2px; }
-    td:nth-of-type(2):before { content: attr(data-label); display: block; font-size: 0.75rem; color: var(--accent-color); text-transform: uppercase; font-weight: 700; margin-bottom: 2px; margin-top: 10px; }
-    td:nth-of-type(3):before { content: attr(data-label); display: block; font-size: 0.75rem; color: var(--accent-color); text-transform: uppercase; font-weight: 700; margin-bottom: 5px; margin-top: 10px; }
-
+    /* Name: Big & Bold */
     td:first-child {
-        font-size: 1.1rem;
-        border-bottom: 1px solid var(--border-color);
-        padding-bottom: 10px;
-        margin-bottom: 10px;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        border-bottom: none;
+        padding-bottom: 5px;
+        margin-bottom: 5px;
+    }
+    td:first-child::before {
+        display: none; /* No label for title */
+    }
+
+    /* Address: Subtle */
+    td:nth-of-type(2) {
+        font-size: 0.95rem;
+        color: var(--sub-text);
+        margin-bottom: 15px;
+        line-height: 1.4;
+    }
+    td:nth-of-type(2)::before {
+        content: "📍 "; /* Icon instead of text label */
+        margin-right: 5px;
+    }
+
+    /* Action: Full width button */
+    td:nth-of-type(3) {
+        text-align: center;
+        margin-top: 10px;
+    }
+    td:nth-of-type(3)::before {
+        display: none;
+    }
+    
+    .map-btn {
+        width: 100%;
+        display: block;
+        text-align: center;
+        padding: 10px 0;
+        box-sizing: border-box;
     }
 }
