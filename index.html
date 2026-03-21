@@ -1,97 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Welcome to my GitHub Pages site.">
-    <title>Home - GitHub Pages</title>
+    <title>Live Subtitles</title>
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            background: #000;
             display: flex;
+            align-items: flex-end;
             justify-content: center;
-            align-items: center;
+            height: 100vh;
+            padding: 40px;
         }
-
-        .container {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            max-width: 600px;
-            text-align: center;
-        }
-
-        h1 {
-            color: #667eea;
-            margin-bottom: 0.5rem;
-            font-size: 2.5rem;
-        }
-
-        .subtitle {
-            color: #666;
-            font-size: 1.1rem;
-            margin-bottom: 2rem;
-        }
-
-        p {
-            color: #555;
-            margin-bottom: 1.5rem;
-            font-size: 1rem;
-        }
-
-        .btn {
-            display: inline-block;
-            background: #667eea;
+        #subtitles {
             color: white;
-            padding: 0.75rem 2rem;
-            border-radius: 5px;
-            text-decoration: none;
-            transition: background 0.3s ease;
-            margin: 0.5rem;
-        }
-
-        .btn:hover {
-            background: #764ba2;
-        }
-
-        .footer {
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid #eee;
-            font-size: 0.9rem;
-            color: #999;
+            font-size: 64px;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+            text-align: center;
+            line-height: 1.4;
+            max-width: 90%;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Welcome!</h1>
-        <p class="subtitle">This is your GitHub Pages site</p>
-        
-        <p>
-            You're viewing a beautifully styled boilerplate HTML page. 
-            Edit this file to customize your site with your own content.
-        </p>
+    <div id="subtitles"></div>
+    <script>
+        const pusher = new Pusher('03365a1d4f34ecebfc91', { cluster: 'eu' });
+        const channel = pusher.subscribe('subtitles');
+        const box = document.getElementById('subtitles');
+        const maxWords = 20;
+        let words = [];
 
-        <div>
-            <a href="#" class="btn">Get Started</a>
-            <a href="https://github.com" class="btn">GitHub</a>
-        </div>
-
-        <div class="footer">
-            <p>Powered by GitHub Pages</p>
-        </div>
-    </div>
+        channel.bind('new-text', function(data) {
+            const newWords = data.text.split(' ').filter(w => w.trim());
+            words = [...words, ...newWords];
+            if (words.length > maxWords) {
+                words = words.slice(words.length - maxWords);
+            }
+            box.innerText = words.join(' ');
+        });
+    </script>
 </body>
 </html>
