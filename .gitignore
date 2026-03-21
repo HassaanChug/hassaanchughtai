@@ -1,0 +1,18 @@
+# Build files
+_site/
+.jekyll-cache/
+_posts/
+
+# Dependencies
+node_modules/
+.bundle/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
