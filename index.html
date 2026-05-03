@@ -3,117 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Muazzin.io - Accurate jamaat times for your local masjid">
-    <title>Muazzin - Coming Soon</title>
+    <title>Muazzin - Never miss a jamaat again</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        * {
+        html, body {
+            height: 100%;
             margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: #f5f3f0;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1000px;
-            width: 100%;
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-        }
-
-        .content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            align-items: center;
-            gap: 60px;
-            padding: 80px;
-        }
-
-        .left-section h1 {
-            font-size: 3.5rem;
-            line-height: 1.2;
-            color: #1a472a;
-            margin-bottom: 30px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
-
-        .left-section p {
-            font-size: 1.1rem;
-            color: #666;
-            line-height: 1.6;
-        }
-
-        .right-section {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .icon-wrapper {
-            position: relative;
-            width: 280px;
-            height: 280px;
-        }
-
-        .mosque-icon {
-            font-size: 120px;
-            text-align: center;
-            line-height: 280px;
-        }
-
-        @media (max-width: 900px) {
-            .content {
-                grid-template-columns: 1fr;
-                gap: 40px;
-                padding: 60px 40px;
-            }
-
-            .left-section h1 {
-                font-size: 2.5rem;
-            }
-
-            .right-section {
-                display: none;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .content {
-                padding: 40px 20px;
-                gap: 30px;
-            }
-
-            .left-section h1 {
-                font-size: 2rem;
-            }
-
-            .left-section p {
-                font-size: 1rem;
-            }
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div class="content">
-            <div class="left-section">
-                <h1>Accurate jamaat times for your local masjid</h1>
-                <p>Never miss a prayer. Get real-time jamaat times delivered to your fingertips.</p>
+<body class="h-full">
+    <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-emerald-50 to-teal-100 p-4 overflow-hidden">
+        <div class="w-full max-w-5xl bg-white rounded-[2rem] shadow-2xl p-8 md:p-16 relative overflow-hidden">
+            <!-- Decorative elements -->
+            <div class="absolute top-8 left-8 text-emerald-600 opacity-20">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
             </div>
-            <div class="right-section">
-                <div class="icon-wrapper">
-                    <div class="mosque-icon">🕌</div>
+            <div class="absolute bottom-12 left-12 text-teal-600 opacity-20">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+            </div>
+            <div class="absolute top-12 right-16 text-emerald-600 opacity-20">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-12 items-center relative z-10">
+                <!-- Left side - Content -->
+                <div>
+                    <div class="mb-8">
+                        <h2 class="text-4xl md:text-5xl mb-8 text-emerald-600 font-medium">
+                            Coming Soon
+                        </h2>
+                        <h1 class="text-5xl md:text-6xl mb-6 text-gray-900 font-bold tracking-tight">
+                            Never miss a jamaat again
+                        </h1>
+                        <p class="text-xl text-gray-600 mb-2">
+                            View your masjid's <span class="text-emerald-600 font-semibold">actual jamaat times</span>
+                        </p>
+                        <p class="text-lg text-gray-500">
+                            Real-time updates from your local mosque community
+                        </p>
+                    </div>
+
+                    <div class="text-sm text-gray-400 font-medium">
+                        muazzin.io
+                    </div>
+                </div>
+
+                <!-- Right side - Illustration -->
+                <div class="flex justify-center">
+                    <div class="relative w-64 h-64 md:w-80 md:h-80">
+                        <!-- Mosque dome illustration -->
+                        <div class="absolute inset-0 bg-gradient-to-br from-emerald-600 to-teal-700 rounded-full flex items-center justify-center shadow-lg">
+                            <div class="text-center text-white">
+                                <!-- Crescent moon and stars -->
+                                <div class="flex justify-center">
+                                    <div class="relative">
+                                        <!-- Main Moon -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-yellow-300 md:w-[120px] md:h-[120px]"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                                        
+                                        <!-- Star 1 -->
+                                        <div class="absolute -top-2 -right-2 md:-top-4 md:-right-4 text-yellow-200">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="md:w-7 md:h-7"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                        </div>
+                                        
+                                        <!-- Star 2 -->
+                                        <div class="absolute top-8 -left-4 md:top-12 md:-left-6 text-yellow-200">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="md:w-[22px] md:h-[22px]"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                        </div>
+                                        
+                                        <!-- Star 3 -->
+                                        <div class="absolute bottom-6 right-6 md:bottom-8 md:right-8 text-yellow-200">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="md:w-[18px] md:h-[18px]"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                        </div>
+                                        
+                                        <!-- Star 4 -->
+                                        <div class="absolute top-16 right-1 md:top-20 md:right-2 text-yellow-200">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="md:w-4 md:h-4"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
