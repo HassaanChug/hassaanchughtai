@@ -3,74 +3,183 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Live transcription · English + Arabic</title>
-    <link rel="stylesheet" href="/src/style.css" />
+    <title>Masjid Taqwa · Live captions</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --text: #f4efe6;
+        --muted: #b7aa98;
+        --live: #7dcc9a;
+      }
+      * { box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        height: 100%;
+        background: #120e0a;
+        color: var(--text);
+        font-family: "Segoe UI", system-ui, -apple-system, "Noto Naskh Arabic", "Noto Sans Arabic", sans-serif;
+      }
+      body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        padding: 18px clamp(14px, 3vw, 36px) 24px;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: flex-start;
+        margin-bottom: 16px;
+        border-bottom: 1px solid #2a241c;
+        padding-bottom: 12px;
+      }
+      .brand {
+        margin: 0;
+        font-size: clamp(1.15rem, 2.4vw, 1.7rem);
+        letter-spacing: 0.04em;
+      }
+      .meta {
+        margin: 4px 0 0;
+        color: var(--muted);
+        font-size: clamp(0.85rem, 1.6vw, 1.05rem);
+      }
+      .status {
+        margin: 0;
+        font-size: 0.85rem;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+      .status.live { color: var(--live); }
+      main {
+        flex: 1;
+        min-height: 0;
+        overflow: auto;
+      }
+      #captions {
+        margin: 0;
+        width: 100%;
+        font-size: clamp(0.95rem, 1.8vw, 1.35rem);
+        line-height: 1.7;
+        word-break: break-word;
+      }
+      .original,
+      .translation {
+        unicode-bidi: isolate;
+      }
+      .translation {
+        color: #d4c6b2;
+      }
+      .partial { opacity: 0.72; }
+      .waiting { color: var(--muted); }
+    </style>
   </head>
   <body>
-    <main class="app">
-      <header class="header">
-        <p class="eyebrow">Soniox real-time STT</p>
-        <h1>Speak in English or Arabic</h1>
-        <p class="sub">
-          Your MacBook microphone streams to Soniox. Language hints are
-          <strong>en</strong> + <strong>ar</strong>, same as the playground.
-        </p>
-      </header>
-
-      <section class="controls" aria-label="Recording controls">
-        <button id="startBtn" type="button" class="btn primary">Start listening</button>
-        <button id="stopBtn" type="button" class="btn" disabled>Stop</button>
-        <button id="clearBtn" type="button" class="btn ghost">Clear</button>
-        <div class="status">
-          <span id="statusDot" class="dot idle" aria-hidden="true"></span>
-          <span id="statusLabel">Idle</span>
-        </div>
-      </section>
-
-      <p id="errorBanner" class="error" hidden></p>
-      <p id="muteBanner" class="mute" hidden>Microphone is muted at the system level.</p>
-
-      <section class="share-card">
-        <div class="transcript-meta">
-          <span>Program details</span>
-          <span>Shown on the TV</span>
-        </div>
-        <label class="field">
-          Speaker
-          <input id="speakerInput" type="text" autocomplete="name" placeholder="Speaker name" />
-        </label>
-        <label class="field">
-          Program
-          <input id="programInput" type="text" placeholder="e.g. Friday khutbah" />
-        </label>
-      </section>
-
-      <section class="share-card">
-        <div class="transcript-meta">
-          <span>Website captions</span>
-          <button id="copyLinkBtn" type="button" class="btn ghost small">Copy link</button>
-        </div>
-        <p class="share-help">
-          Put the updated <code>public/live.html</code> on GitHub Pages as <code>index.html</code>, then open:
-        </p>
-        <p id="shareLink" class="share-link">Loading link…</p>
-        <p>
-          Local preview:
-          <a href="/live.html" target="_blank" rel="noreferrer">open captions page</a>
-        </p>
-      </section>
-
-      <section class="transcript-card">
-        <div class="transcript-meta">
-          <span>Transcript</span>
-          <span id="langHint">English + Arabic</span>
-        </div>
-        <div id="transcript" class="transcript" hidden></div>
-        <p id="placeholder" class="placeholder">
-          Press Start, allow the microphone, then speak.
-        </p>
-      </section>
+    <header>
+      <div>
+        <p class="brand">Masjid Taqwa</p>
+        <p id="programLine" class="meta"></p>
+        <p id="speakerLine" class="meta"></p>
+      </div>
+      <p id="status" class="status">Connecting…</p>
+    </header>
+    <main>
+      <div id="captions"><span class="waiting">Waiting for the speaker…</span></div>
     </main>
-    <script type="module" src="/src/main.js"></script>
+    <script>
+      const DEFAULT_TOPIC = "hc-masjid-k8m2q9n4p1";
+      const topic =
+        new URLSearchParams(location.search).get("topic") || DEFAULT_TOPIC;
+      const statusEl = document.getElementById("status");
+      const captionsEl = document.getElementById("captions");
+      const programLine = document.getElementById("programLine");
+      const speakerLine = document.getElementById("speakerLine");
+
+      function appendUnit(original, translation, partial) {
+        const spoken = (original || "").replace(/\s+/g, " ").trim();
+        const translated = (translation || "").replace(/\s+/g, " ").trim();
+        if (!spoken && !translated) return;
+        if (captionsEl.childNodes.length) captionsEl.append(" ");
+        const unit = document.createElement("span");
+        unit.className = partial ? "unit partial" : "unit";
+        if (spoken) {
+          const line = document.createElement("span");
+          line.className = "original";
+          line.dir = "auto";
+          line.textContent = spoken;
+          unit.appendChild(line);
+        }
+        if (translated) {
+          const line = document.createElement("span");
+          line.className = "translation";
+          line.dir = "ltr";
+          line.textContent = (spoken ? " " : "") + "[" + translated + "]";
+          unit.appendChild(line);
+        }
+        captionsEl.appendChild(unit);
+      }
+
+      function render(payload) {
+        document.title = (payload.masjid || "Masjid Taqwa") + " · Live captions";
+        const program = payload.program || "";
+        const speaker = payload.speaker || "";
+        programLine.textContent = program;
+        speakerLine.textContent = speaker ? "Speaker: " + speaker : "";
+        programLine.hidden = !program;
+        speakerLine.hidden = !speaker;
+
+        const blocks = Array.isArray(payload.blocks) ? payload.blocks : [];
+        const current = payload.current || {};
+        const liveOriginal = (current.original || "") + (payload.partialOriginal || "");
+        const liveTranslation = (current.translation || "") + (payload.partialTranslation || "");
+        const legacyFinal = payload.final || "";
+        const legacyPartial = payload.partial || "";
+        const hasStructured = blocks.length || liveOriginal || liveTranslation;
+
+        captionsEl.replaceChildren();
+        if (!hasStructured && !legacyFinal && !legacyPartial) {
+          const waiting = document.createElement("span");
+          waiting.className = "waiting";
+          waiting.textContent = "Waiting for the speaker…";
+          captionsEl.appendChild(waiting);
+          return;
+        }
+
+        if (hasStructured) {
+          for (const block of blocks) {
+            appendUnit(block.original, block.translation, false);
+          }
+          appendUnit(
+            liveOriginal,
+            liveTranslation,
+            Boolean(payload.partialOriginal || payload.partialTranslation),
+          );
+        } else {
+          appendUnit(legacyFinal + legacyPartial, "", Boolean(legacyPartial));
+        }
+        captionsEl.parentElement.scrollTop = captionsEl.parentElement.scrollHeight;
+      }
+
+      const source = new EventSource("https://ntfy.sh/" + encodeURIComponent(topic) + "/sse");
+      source.onopen = () => {
+        statusEl.textContent = "Listening";
+        statusEl.classList.add("live");
+      };
+      source.onerror = () => {
+        statusEl.textContent = "Reconnecting…";
+        statusEl.classList.remove("live");
+      };
+      source.onmessage = (event) => {
+        try {
+          const envelope = JSON.parse(event.data);
+          const payload = JSON.parse(envelope.message);
+          render(payload);
+          statusEl.textContent = payload.live ? "Live" : "Paused";
+          statusEl.classList.toggle("live", Boolean(payload.live));
+        } catch {
+          /* ignore keepalives / non-caption messages */
+        }
+      };
+    </script>
   </body>
 </html>
