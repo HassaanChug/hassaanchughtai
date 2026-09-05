@@ -1,11 +1,121 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello World</title>
-</head>
-<body>
-    <h1>Hello World</h1>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Live captions</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --text: #f4efe6;
+        --muted: #b7aa98;
+        --live: #7dcc9a;
+      }
+      * { box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        min-height: 100%;
+        background: #120e0a;
+        color: var(--text);
+        font-family: "Segoe UI", system-ui, -apple-system, "Noto Naskh Arabic", "Noto Sans Arabic", sans-serif;
+      }
+      body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        padding: 28px clamp(16px, 4vw, 48px) 40px;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: baseline;
+        margin-bottom: 24px;
+      }
+      .kicker {
+        margin: 0;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+      .status {
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+      .status.live { color: var(--live); }
+      main {
+        flex: 1;
+        display: flex;
+        align-items: center;
+      }
+      #captions {
+        margin: 0;
+        width: 100%;
+        font-size: clamp(1.6rem, 4.6vw, 3.4rem);
+        line-height: 1.45;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      .partial { color: #d9cbb8; opacity: 0.72; }
+      .waiting { color: var(--muted); font-size: 1.2rem; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <p class="kicker">Live captions · English &amp; Arabic</p>
+      <p id="status" class="status">Connecting…</p>
+    </header>
+    <main>
+      <p id="captions" dir="auto"><span class="waiting">Waiting for the speaker…</span></p>
+    </main>
+    <script>
+      const DEFAULT_TOPIC = "hc-masjid-k8m2q9n4p1";
+      const topic =
+        new URLSearchParams(location.search).get("topic") || DEFAULT_TOPIC;
+      const statusEl = document.getElementById("status");
+      const captionsEl = document.getElementById("captions");
+
+      function render(payload) {
+        const finalText = payload.final || "";
+        const partial = payload.partial || "";
+        if (!finalText && !partial) {
+          captionsEl.innerHTML = '<span class="waiting">Waiting for the speaker…</span>';
+          return;
+        }
+        const shown = finalText.length > 1800 ? finalText.slice(-1800) : finalText;
+        captionsEl.textContent = "";
+        const finalNode = document.createElement("span");
+        finalNode.textContent = shown;
+        captionsEl.appendChild(finalNode);
+        if (partial) {
+          const partialNode = document.createElement("span");
+          partialNode.className = "partial";
+          partialNode.textContent = partial;
+          captionsEl.appendChild(partialNode);
+        }
+      }
+
+      const source = new EventSource("https://ntfy.sh/" + encodeURIComponent(topic) + "/sse");
+      source.onopen = () => {
+        statusEl.textContent = "Listening";
+        statusEl.classList.add("live");
+      };
+      source.onerror = () => {
+        statusEl.textContent = "Reconnecting…";
+        statusEl.classList.remove("live");
+      };
+      source.onmessage = (event) => {
+        try {
+          const envelope = JSON.parse(event.data);
+          const payload = JSON.parse(envelope.message);
+          render(payload);
+          statusEl.textContent = payload.live ? "Live" : "Paused";
+          statusEl.classList.toggle("live", Boolean(payload.live));
+        } catch {
+          /* ignore keepalives / non-caption messages */
+        }
+      };
+    </script>
+  </body>
 </html>
