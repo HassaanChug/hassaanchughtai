@@ -3,119 +3,74 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Live captions</title>
-    <style>
-      :root {
-        color-scheme: dark;
-        --text: #f4efe6;
-        --muted: #b7aa98;
-        --live: #7dcc9a;
-      }
-      * { box-sizing: border-box; }
-      html, body {
-        margin: 0;
-        min-height: 100%;
-        background: #120e0a;
-        color: var(--text);
-        font-family: "Segoe UI", system-ui, -apple-system, "Noto Naskh Arabic", "Noto Sans Arabic", sans-serif;
-      }
-      body {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        padding: 28px clamp(16px, 4vw, 48px) 40px;
-      }
-      header {
-        display: flex;
-        justify-content: space-between;
-        gap: 16px;
-        align-items: baseline;
-        margin-bottom: 24px;
-      }
-      .kicker {
-        margin: 0;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        font-size: 0.75rem;
-        color: var(--muted);
-      }
-      .status {
-        font-size: 0.9rem;
-        color: var(--muted);
-      }
-      .status.live { color: var(--live); }
-      main {
-        flex: 1;
-        display: flex;
-        align-items: center;
-      }
-      #captions {
-        margin: 0;
-        width: 100%;
-        font-size: clamp(1.6rem, 4.6vw, 3.4rem);
-        line-height: 1.45;
-        white-space: pre-wrap;
-        word-break: break-word;
-      }
-      .partial { color: #d9cbb8; opacity: 0.72; }
-      .waiting { color: var(--muted); font-size: 1.2rem; }
-    </style>
+    <title>Live transcription · English + Arabic</title>
+    <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
-    <header>
-      <p class="kicker">Live captions · English &amp; Arabic</p>
-      <p id="status" class="status">Connecting…</p>
-    </header>
-    <main>
-      <p id="captions" dir="auto"><span class="waiting">Waiting for the speaker…</span></p>
+    <main class="app">
+      <header class="header">
+        <p class="eyebrow">Soniox real-time STT</p>
+        <h1>Speak in English or Arabic</h1>
+        <p class="sub">
+          Your MacBook microphone streams to Soniox. Language hints are
+          <strong>en</strong> + <strong>ar</strong>, same as the playground.
+        </p>
+      </header>
+
+      <section class="controls" aria-label="Recording controls">
+        <button id="startBtn" type="button" class="btn primary">Start listening</button>
+        <button id="stopBtn" type="button" class="btn" disabled>Stop</button>
+        <button id="clearBtn" type="button" class="btn ghost">Clear</button>
+        <div class="status">
+          <span id="statusDot" class="dot idle" aria-hidden="true"></span>
+          <span id="statusLabel">Idle</span>
+        </div>
+      </section>
+
+      <p id="errorBanner" class="error" hidden></p>
+      <p id="muteBanner" class="mute" hidden>Microphone is muted at the system level.</p>
+
+      <section class="share-card">
+        <div class="transcript-meta">
+          <span>Program details</span>
+          <span>Shown on the TV</span>
+        </div>
+        <label class="field">
+          Speaker
+          <input id="speakerInput" type="text" autocomplete="name" placeholder="Speaker name" />
+        </label>
+        <label class="field">
+          Program
+          <input id="programInput" type="text" placeholder="e.g. Friday khutbah" />
+        </label>
+      </section>
+
+      <section class="share-card">
+        <div class="transcript-meta">
+          <span>Website captions</span>
+          <button id="copyLinkBtn" type="button" class="btn ghost small">Copy link</button>
+        </div>
+        <p class="share-help">
+          Put the updated <code>public/live.html</code> on GitHub Pages as <code>index.html</code>, then open:
+        </p>
+        <p id="shareLink" class="share-link">Loading link…</p>
+        <p>
+          Local preview:
+          <a href="/live.html" target="_blank" rel="noreferrer">open captions page</a>
+        </p>
+      </section>
+
+      <section class="transcript-card">
+        <div class="transcript-meta">
+          <span>Transcript</span>
+          <span id="langHint">English + Arabic</span>
+        </div>
+        <div id="transcript" class="transcript" hidden></div>
+        <p id="placeholder" class="placeholder">
+          Press Start, allow the microphone, then speak.
+        </p>
+      </section>
     </main>
-    <script>
-      const DEFAULT_TOPIC = "hc-masjid-k8m2q9n4p1";
-      const topic =
-        new URLSearchParams(location.search).get("topic") || DEFAULT_TOPIC;
-      const statusEl = document.getElementById("status");
-      const captionsEl = document.getElementById("captions");
-
-      function render(payload) {
-        const finalText = payload.final || "";
-        const partial = payload.partial || "";
-        if (!finalText && !partial) {
-          captionsEl.innerHTML = '<span class="waiting">Waiting for the speaker…</span>';
-          return;
-        }
-        const shown = finalText.length > 1800 ? finalText.slice(-1800) : finalText;
-        captionsEl.textContent = "";
-        const finalNode = document.createElement("span");
-        finalNode.textContent = shown;
-        captionsEl.appendChild(finalNode);
-        if (partial) {
-          const partialNode = document.createElement("span");
-          partialNode.className = "partial";
-          partialNode.textContent = partial;
-          captionsEl.appendChild(partialNode);
-        }
-      }
-
-      const source = new EventSource("https://ntfy.sh/" + encodeURIComponent(topic) + "/sse");
-      source.onopen = () => {
-        statusEl.textContent = "Listening";
-        statusEl.classList.add("live");
-      };
-      source.onerror = () => {
-        statusEl.textContent = "Reconnecting…";
-        statusEl.classList.remove("live");
-      };
-      source.onmessage = (event) => {
-        try {
-          const envelope = JSON.parse(event.data);
-          const payload = JSON.parse(envelope.message);
-          render(payload);
-          statusEl.textContent = payload.live ? "Live" : "Paused";
-          statusEl.classList.toggle("live", Boolean(payload.live));
-        } catch {
-          /* ignore keepalives / non-caption messages */
-        }
-      };
-    </script>
+    <script type="module" src="/src/main.js"></script>
   </body>
 </html>
