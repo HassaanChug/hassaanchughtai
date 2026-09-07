@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>BAR — Pull-Up Program</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#17181A;
+    --surface:#202226;
+    --surface2:#2A2D32;
+    --line: rgba(237,237,230,0.10);
+    --chalk:#EDEDE6;
+    --chalk-dim:#9B9C97;
+    --accent:#D9A441;
+    --accent-dim: rgba(217,164,65,0.18);
+    --sage:#6E8C82;
+    --sage-dim: rgba(110,140,130,0.18);
+    --danger:#C1685A;
+    --radius: 14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--chalk);
+    font-family:'IBM Plex Mono', monospace;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+  }
+  h1,h2,h3,.display{
+    font-family:'Barlow Condensed', sans-serif;
+    font-weight:700;
+    letter-spacing:0.01em;
+    margin:0;
+  }
+  #app{
+    width:100%;
+    max-width:480px;
+    min-height:100vh;
+    background:var(--bg);
+    position:relative;
+    padding-bottom:40px;
+  }
+  .screen{display:none;}
+  .screen.active{display:block;}
+
+  /* ---------- HOME ---------- */
+  .hero{
+    padding:28px 22px 20px;
+    border-bottom:1px solid var(--line);
+  }
+  .hero .mark{
+    font-size:14px;
+    color:var(--chalk-dim);
+    letter-spacing:0.14em;
+  }
+  .hero h1{
+    font-size:38px;
+    line-height:1.05;
+    margin-top:6px;
+  }
+  .hero .sub{
+    margin-top:10px;
+    font-size:14px;
+    color:var(--chalk-dim);
+    line-height:1.5;
+    max-width:340px;
+  }
+
+  .next-card{
+    margin:20px 22px 0;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:20px;
+  }
+  .next-card .label{font-size:12px;color:var(--chalk-dim);}
+  .next-card h2{font-size:26px;margin-top:4px;}
+  .next-card .desc{font-size:13px;color:var(--chalk-dim);margin-top:8px;line-height:1.5;}
+  .start-btn{
+    margin-top:16px;
+    width:100%;
+    padding:16px;
+    border-radius:10px;
+    border:none;
+    background:var(--accent);
+    color:#1B1500;
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:700;
+    font-size:19px;
+    letter-spacing:0.02em;
+    cursor:pointer;
+  }
+  .start-btn:active{transform:scale(0.98);}
+
+  .stages{margin:28px 22px 0;}
+  .stages h3{font-size:13px;color:var(--chalk-dim);letter-spacing:0.08em;font-weight:600;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;}
+  .stage-row{
+    display:flex;
+    gap:14px;
+    padding:14px 0;
+    border-bottom:1px solid var(--line);
+    align-items:flex-start;
+  }
+  .stage-row:last-child{border-bottom:none;}
+  .stage-num{
+    width:30px;height:30px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:13px;font-weight:600;
+    border:1px solid var(--line);
+    color:var(--chalk-dim);
+    flex-shrink:0;
+    margin-top:2px;
+  }
+  .stage-row.done .stage-num{background:var(--sage-dim);border-color:var(--sage);color:var(--sage);}
+  .stage-row.current .stage-num{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);}
+  .stage-body h4{font-size:16px;margin:0;font-family:'Barlow Condensed',sans-serif;font-weight:600;}
+  .stage-row.current .stage-body h4{color:var(--accent);}
+  .stage-body p{font-size:12.5px;color:var(--chalk-dim);margin:4px 0 0;line-height:1.45;}
+  .stage-body .prog{font-size:11px;color:var(--chalk-dim);margin-top:6px;}
+
+  .week-block{margin-bottom:18px;}
+  .week-heading{
+    font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:15px;
+    color:var(--chalk-dim);margin-bottom:8px;
+  }
+  .day-row{
+    display:flex;align-items:center;gap:12px;
+    padding:9px 0;border-bottom:1px solid var(--line);
+    font-size:13px;color:var(--chalk-dim);
+  }
+  .day-row:last-child{border-bottom:none;}
+  .day-dot{
+    width:26px;height:26px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:12px;border:1px solid var(--line);color:var(--chalk-dim);
+    flex-shrink:0;
+  }
+  .day-row.done{color:var(--chalk-dim);}
+  .day-row.done .day-dot{background:var(--sage-dim);border-color:var(--sage);color:var(--sage);}
+  .day-row.current{color:var(--chalk);}
+  .day-row.current .day-dot{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);}
+  .day-row.current .day-label{color:var(--accent);font-weight:600;}
+
+  .history{margin:28px 22px 0;}
+  .history h3{font-size:13px;color:var(--chalk-dim);letter-spacing:0.08em;font-weight:600;text-transform:uppercase;}
+  .hist-row{
+    display:flex;justify-content:space-between;
+    padding:10px 0;border-bottom:1px solid var(--line);
+    font-size:12.5px;
+  }
+  .hist-row .d{color:var(--chalk-dim);}
+  .hist-empty{color:var(--chalk-dim);font-size:12.5px;padding:10px 0;}
+
+  .reset-row{margin:30px 22px 0;text-align:center;}
+  .quick-row{display:flex;justify-content:space-between;gap:10px;margin-bottom:10px;}
+  .reset-btn{
+    background:none;border:none;color:var(--chalk-dim);
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;
+    text-decoration:underline;cursor:pointer;
+  }
+  #backup-panel{
+    margin:12px 0;padding:14px;background:var(--surface);border:1px solid var(--line);
+    border-radius:10px;text-align:left;
+  }
+  #backup-panel textarea{
+    width:100%;min-height:70px;background:var(--surface2);color:var(--chalk);
+    border:1px solid var(--line);border-radius:8px;font-family:'IBM Plex Mono',monospace;
+    font-size:11px;padding:8px;margin-bottom:8px;
+  }
+  #backup-panel .panel-label{font-size:11.5px;color:var(--chalk-dim);margin-bottom:6px;}
+  #backup-panel .panel-btn{
+    padding:8px 14px;border-radius:8px;border:1px solid var(--accent);
+    background:var(--accent-dim);color:var(--accent);font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;cursor:pointer;
+  }
+  .save-status{font-size:11px;color:var(--chalk-dim);margin:8px 0;min-height:14px;}
+
+  /* ---------- PLAYER ---------- */
+  #player{
+    display:flex;flex-direction:column;
+    min-height:100vh;
+  }
+  .player-top{
+    padding:18px 22px 0;
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .exit-btn, .mute-btn{
+    background:none;border:none;color:var(--chalk-dim);
+    font-family:'IBM Plex Mono',monospace;font-size:13px;cursor:pointer;
+  }
+  .set-dots{display:flex;gap:6px;justify-content:center;margin-top:18px;}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--surface2);}
+  .dot.filled{background:var(--accent);}
+  .dot.active{background:var(--chalk);}
+
+  .player-mid{
+    flex:1;
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    text-align:center;
+    padding:20px 30px;
+  }
+  .exercise-name{font-size:15px;color:var(--chalk-dim);letter-spacing:0.06em;text-transform:uppercase;}
+  .set-count{font-size:13px;color:var(--accent);margin-top:6px;font-family:'IBM Plex Mono',monospace;}
+  .big-timer{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:76px;font-weight:600;
+    margin:22px 0 10px;
+    color:var(--chalk);
+    letter-spacing:0.02em;
+  }
+  .big-timer.resting{color:var(--sage);}
+  .instruction{font-size:14.5px;color:var(--chalk-dim);line-height:1.6;max-width:320px;}
+  .voice-line{font-size:12px;color:var(--accent);margin-top:14px;min-height:16px;}
+
+  .rep-target{
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:44px;font-weight:700;
+    color:var(--accent);
+    margin:14px 0 6px;
+  }
+
+  .stepper{
+    display:flex;align-items:center;gap:18px;
+    margin-top:18px;
+  }
+  .stepper button{
+    width:40px;height:40px;border-radius:50%;
+    border:1px solid var(--line);background:var(--surface);
+    color:var(--chalk);font-size:18px;cursor:pointer;
+  }
+  .stepper .val{font-size:22px;min-width:34px;font-family:'IBM Plex Mono',monospace;}
+
+  .player-bottom{
+    padding:20px 22px 30px;
+  }
+  .primary-btn{
+    width:100%;padding:18px;border-radius:10px;border:none;
+    font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:19px;
+    cursor:pointer;background:var(--accent);color:#1B1500;
+  }
+  .secondary-btn{
+    width:100%;padding:12px;margin-top:10px;background:none;border:none;
+    color:var(--chalk-dim);font-family:'IBM Plex Mono',monospace;font-size:12.5px;
+    text-decoration:underline;cursor:pointer;
+  }
+  .rest-btn{background:var(--sage);color:#0E1512;}
+
+  /* ---------- COMPLETE ---------- */
+  .complete-wrap{padding:60px 26px;text-align:center;}
+  .complete-wrap h2{font-size:30px;color:var(--accent);}
+  .complete-wrap p{color:var(--chalk-dim);font-size:13.5px;margin-top:10px;line-height:1.6;}
+  .note-row{display:flex;gap:10px;margin-top:26px;}
+  .note-btn{
+    flex:1;padding:12px 8px;border-radius:10px;border:1px solid var(--line);
+    background:var(--surface);color:var(--chalk);font-family:'IBM Plex Mono',monospace;
+    font-size:12px;cursor:pointer;
+  }
+  .note-btn.selected{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
+  .goal-banner{
+    margin-top:22px;padding:16px;border-radius:10px;
+    background:var(--sage-dim);border:1px solid var(--sage);color:var(--sage);
+    font-size:13px;
+  }
+
+  .loading-note{padding:40px 22px;color:var(--chalk-dim);font-size:13px;text-align:center;}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HOME -->
+  <div class="screen active" id="screen-home">
+    <div class="hero">
+      <div class="mark">BAR — HOME PULL-UP PROGRAM</div>
+      <h1>Zero to<br>3×8 pull-ups.</h1>
+      <div class="sub">Dead hang → scapular pulls → negatives → assisted → full pull-ups. Ring rows every session. Guided out loud, one set at a time.</div>
+    </div>
+
+    <div class="next-card" id="next-card">
+      <div class="label">UP NEXT</div>
+      <h2 id="next-title">Loading…</h2>
+      <div class="desc" id="next-desc"></div>
+      <button class="start-btn" id="start-btn">Start session</button>
+    </div>
+
+    <div class="stages" id="stages-list">
+      <h3>Progression</h3>
+    </div>
+
+    <div class="history">
+      <h3>Recent sessions</h3>
+      <div id="history-list"><div class="hist-empty">Nothing logged yet.</div></div>
+    </div>
+
+    <div class="reset-row">
+      <div class="quick-row">
+        <button class="reset-btn" id="back-btn">◂ go back a day</button>
+        <button class="reset-btn" id="skip-btn">skip ahead a day ▸</button>
+      </div>
+      <div class="quick-row">
+        <button class="reset-btn" id="backup-btn">backup progress</button>
+        <button class="reset-btn" id="restore-btn">restore from backup</button>
+      </div>
+      <div id="backup-panel" style="display:none;"></div>
+      <div class="save-status" id="save-status"></div>
+      <button class="reset-btn" id="reset-btn">reset all progress</button>
+    </div>
+  </div>
+
+  <!-- PLAYER -->
+  <div class="screen" id="screen-player">
+    <div id="player">
+      <div class="player-top">
+        <button class="exit-btn" id="exit-btn">← end session</button>
+        <button class="mute-btn" id="mute-btn">🔊 voice on</button>
+      </div>
+      <div class="set-dots" id="set-dots"></div>
+      <div class="player-mid" id="player-mid">
+        <!-- filled by JS -->
+      </div>
+      <div class="player-bottom" id="player-bottom">
+        <!-- filled by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPLETE -->
+  <div class="screen" id="screen-complete">
+    <div class="complete-wrap">
+      <h2>Session done.</h2>
+      <p id="complete-summary">Nice work.</p>
+      <div id="goal-banner-slot"></div>
+      <div class="note-row">
+        <button class="note-btn" data-note="easy">Too easy</button>
+        <button class="note-btn" data-note="right">Just right</button>
+        <button class="note-btn" data-note="hard">Too hard</button>
+      </div>
+      <button class="start-btn" style="margin-top:26px;" id="done-btn">Back home</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ============ PROGRAM DATA ============ */
+const STAGES = [
+  { key:'hang', name:'Dead Hang', tagline:'Build grip strength and shoulder position under load with fixed, progressive holds — not max effort every set.',
+    sessions:[
+      {hang:{sets:4,targetSec:10,restSec:60}, row:{sets:3,reps:'8',restSec:60}},
+      {hang:{sets:4,targetSec:15,restSec:60}, row:{sets:3,reps:'10',restSec:60}},
+      {hang:{sets:5,targetSec:15,restSec:60}, row:{sets:3,reps:'10',restSec:60}},
+      {hang:{sets:5,targetSec:20,restSec:45}, row:{sets:3,reps:'12',restSec:60}},
+      {hang:{sets:5,targetSec:25,restSec:45}, row:{sets:4,reps:'12',restSec:60}},
+      {hang:{sets:5,targetSec:30,restSec:45,bonusMax:true}, row:{sets:4,reps:'12',restSec:60}, assessment:'Finish with one all-out max hold, just to see where your grip is at.'}
+    ]},
+  { key:'scap', name:'Scapular Pulls', tagline:'Teach the shoulder blades to initiate the pull.',
+    sessions:[
+      {hangWarm:{sets:2,restSec:45}, scap:{sets:3,reps:'8',restSec:75}, row:{sets:3,reps:'10',restSec:60}},
+      {hangWarm:{sets:2,restSec:45}, scap:{sets:3,reps:'10',restSec:75}, row:{sets:3,reps:'12',restSec:60}},
+      {hangWarm:{sets:2,restSec:45}, scap:{sets:4,reps:'10',restSec:60}, row:{sets:4,reps:'12',restSec:60}},
+      {hangWarm:{sets:2,restSec:45}, scap:{sets:4,reps:'12',restSec:60}, row:{sets:4,reps:'12',restSec:50}},
+      {hangWarm:{sets:2,restSec:45}, scap:{sets:4,reps:'12',restSec:60}, row:{sets:4,reps:'15',restSec:50}},
+      {hangWarm:{sets:2,restSec:45}, scap:{sets:5,reps:'12',restSec:60}, row:{sets:4,reps:'15',restSec:45}}
+    ]},
+  { key:'neg', name:'Negative Pull-Ups', tagline:'Control the lowering phase — that\u2019s where pull-up strength is built.',
+    sessions:[
+      {neg:{sets:3,reps:'3',restSec:90}, row:{sets:3,reps:'12',restSec:60}},
+      {neg:{sets:3,reps:'4',restSec:90}, row:{sets:3,reps:'15',restSec:60}},
+      {neg:{sets:4,reps:'4',restSec:90}, row:{sets:4,reps:'15',restSec:60}},
+      {neg:{sets:4,reps:'5',restSec:90}, row:{sets:4,reps:'15',restSec:50}},
+      {neg:{sets:5,reps:'5',restSec:75}, row:{sets:4,reps:'15',restSec:50}},
+      {neg:{sets:5,reps:'5',restSec:75}, row:{sets:4,reps:'15',restSec:45}, assessment:'Every rep a full 5-second lower.'}
+    ]},
+  { key:'assist', name:'Assisted Pull-Ups', tagline:'Bridge the gap with partial-range reps until the first full rep lands.',
+    sessions:[
+      {assist:{sets:3,reps:'3',restSec:90}, row:{sets:4,reps:'15',restSec:45}},
+      {assist:{sets:3,reps:'4',restSec:90}, row:{sets:4,reps:'15',restSec:45}},
+      {assist:{sets:4,reps:'4',restSec:75}, row:{sets:4,reps:'15',restSec:45}},
+      {assist:{sets:4,reps:'5',restSec:75}, row:{sets:4,reps:'15',restSec:40}},
+      {assist:{sets:4,reps:'6',restSec:75}, row:{sets:4,reps:'15',restSec:40}},
+      {assist:{sets:5,reps:'6',restSec:60}, row:{sets:4,reps:'15',restSec:40}, assessment:'Attempt one fully unassisted rep.'}
+    ]},
+  { key:'pull', name:'Full Pull-Ups', tagline:'Build reps until you hold 3 sets of 8 with clean form.', open:true }
+];
+
+const WARMUP_STEPS = [
+  {text:'Arm circles, both directions', voice:'Warm up. Arm circles, both directions.'},
+  {text:'Scapular shrugs hanging from the bar', voice:'Scapular shrugs on the bar. Hang, then shrug your shoulders up and down.'},
+  {text:'Cat-cow to open the upper back', voice:'Cat cow, to open the upper back.'}
+];
+const COOLDOWN_STEPS = [
+  {name:'Doorway Chest Stretch — left', instruction:'Forearm on a door frame, step through gently until you feel it across the chest.', voice:'Chest stretch, left side.'},
+  {name:'Doorway Chest Stretch — right', instruction:'Same stretch, other side.', voice:'Chest stretch, right side.'},
+  {name:'Hanging Lat Stretch', instruction:'Relaxed hang from the bar. Let the lats and shoulders lengthen.', voice:'Hanging stretch to finish.'}
+];
+
+/* ============ STATE / STORAGE ============ */
+const DEFAULT_STATE = { stageIndex:0, sessionIndex:0, pullTarget:1, stage4SessionCount:0, muted:false, history:[] };
+let state = null;
+let steps = [];
+let stepIdx = 0;
+let timerHandle = null;
+let elapsed = 0; // for stopwatch
+let remaining = 0; // for countdowns
+let sessionLog = {}; // logKey -> array of values this session
+
+async function loadState(){
+  try{
+    const raw = localStorage.getItem('pullup_progress');
+    state = raw ? JSON.parse(raw) : {...DEFAULT_STATE};
+  }catch(e){
+    state = {...DEFAULT_STATE};
+  }
+  if(!state.history) state.history = [];
+  renderHome();
+}
+async function saveState(){
+  try{
+    localStorage.setItem('pullup_progress', JSON.stringify(state));
+    setSaveStatus('progress saved');
+    return true;
+  }catch(e){
+    setSaveStatus('couldn\u2019t auto-save — use "backup progress" below to keep a copy');
+    return false;
+  }
+}
+function setSaveStatus(text){
+  const el = document.getElementById('save-status');
+  if(el) el.textContent = text;
+}
+
+/* ============ VOICE ============ */
+function speak(text){
+  if(state.muted || !text) return;
+  try{
+    if(!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 1;
+    window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+/* ============ HOME RENDER ============ */
+function weekDayFor(stageIndex, sessionIndex){
+  // Stages 0-3 each run 2 weeks of 3 days (6 sessions). Stage 4 continues from week 9.
+  if(stageIndex < 4){
+    const globalDay = stageIndex*6 + sessionIndex; // 0-based
+    return { week: Math.floor(globalDay/3)+1, day: (globalDay%3)+1 };
+  }
+  const globalDay = state.stage4SessionCount;
+  return { week: 9 + Math.floor(globalDay/3), day: (globalDay%3)+1 };
+}
+function currentSessionsCount(stageIdx){
+  return STAGES[stageIdx].open ? null : STAGES[stageIdx].sessions.length;
+}
+function renderHome(){
+  const stage = STAGES[state.stageIndex];
+  const wd = weekDayFor(state.stageIndex, state.sessionIndex);
+  const nextTitleEl = document.getElementById('next-title');
+  const nextDescEl = document.getElementById('next-desc');
+  nextTitleEl.textContent = 'Week ' + wd.week + ' · Day ' + wd.day;
+  if(stage.open){
+    nextDescEl.textContent = stage.name + ' — 3 sets × ' + state.pullTarget + ' rep' + (state.pullTarget===1?'':'s') + '. Goal is 3×8.';
+  } else {
+    nextDescEl.textContent = stage.name + ' — ' + stage.tagline;
+  }
+
+  const list = document.getElementById('stages-list');
+  list.innerHTML = '<h3>Weeks</h3>';
+  const curGlobalDay = state.stageIndex*6 + state.sessionIndex; // only meaningful while stageIndex<4
+
+  for(let stageIdx=0; stageIdx<4; stageIdx++){
+    const s = STAGES[stageIdx];
+    for(let half=0; half<2; half++){
+      const weekNum = stageIdx*2 + half + 1;
+      const wrap = document.createElement('div');
+      wrap.className = 'week-block';
+      const heading = document.createElement('div');
+      heading.className = 'week-heading';
+      heading.textContent = 'Week ' + weekNum + ' — ' + s.name;
+      wrap.appendChild(heading);
+      for(let d=0; d<3; d++){
+        const sessionIndex = half*3 + d;
+        const globalDay = stageIdx*6 + sessionIndex;
+        const row = document.createElement('div');
+        let cls = 'day-row';
+        if(state.stageIndex>4 || (state.stageIndex===4) ){ cls += ' done'; }
+        else if(globalDay < curGlobalDay) cls += ' done';
+        else if(globalDay === curGlobalDay && state.stageIndex===stageIdx) cls += ' current';
+        row.className = cls;
+        const dot = document.createElement('div'); dot.className='day-dot';
+        dot.textContent = (cls.includes('done')) ? '✓' : (d+1);
+        const label = document.createElement('div'); label.className='day-label';
+        label.textContent = 'Day ' + (d+1);
+        row.appendChild(dot); row.appendChild(label);
+        wrap.appendChild(row);
+      }
+      list.appendChild(wrap);
+    }
+  }
+  const openWrap = document.createElement('div');
+  openWrap.className = 'week-block';
+  const openHeading = document.createElement('div');
+  openHeading.className = 'week-heading';
+  openHeading.textContent = 'Week 9 onward — Full Pull-Ups';
+  openWrap.appendChild(openHeading);
+  const openRow = document.createElement('div');
+  openRow.className = 'day-row' + (state.stageIndex===4 ? ' current':'');
+  const openDot = document.createElement('div'); openDot.className='day-dot';
+  openDot.textContent = state.stageIndex===4 ? (weekDayFor(4,0).day) : '—';
+  const openLabel = document.createElement('div'); openLabel.className='day-label';
+  openLabel.textContent = state.stageIndex===4
+    ? ('Ongoing — currently 3×' + state.pullTarget + ', 3 sessions a week until 3×8')
+    : 'Unlocks after Assisted Pull-Ups';
+  openRow.appendChild(openDot); openRow.appendChild(openLabel);
+  openWrap.appendChild(openRow);
+  list.appendChild(openWrap);
+
+  const hist = document.getElementById('history-list');
+  if(state.history.length===0){
+    hist.innerHTML = '<div class="hist-empty">Nothing logged yet.</div>';
+  } else {
+    hist.innerHTML='';
+    state.history.slice(-6).reverse().forEach(h=>{
+      const row=document.createElement('div'); row.className='hist-row';
+      const left=document.createElement('span'); left.textContent = h.stage + ' · ' + h.note;
+      const right=document.createElement('span'); right.className='d'; right.textContent = h.date;
+      row.appendChild(left); row.appendChild(right);
+      hist.appendChild(row);
+    });
+  }
+}
+
+/* ============ SESSION BUILD ============ */
+function getSessionData(){
+  const stage = STAGES[state.stageIndex];
+  if(stage.open){
+    return { pull:{sets:3, targetReps:state.pullTarget, restSec:120}, row:{sets:4,reps:'15',restSec:90} };
+  }
+  return stage.sessions[state.sessionIndex];
+}
+
+function buildSteps(){
+  const stageIdx = state.stageIndex;
+  const sess = getSessionData();
+  let out = [];
+
+  WARMUP_STEPS.forEach(w=>{
+    out.push({type:'warmup', durationSec:30, text:w.text, voice:w.voice});
+  });
+
+  function addRest(sec, nextText){
+    out.push({type:'rest', durationSec:sec, nextText:nextText, voice:'Rest.'});
+  }
+
+  if(stageIdx===0){
+    for(let i=1;i<=sess.hang.sets;i++){
+      out.push({type:'stopwatch', exercise:'Dead Hang', setNum:i, totalSets:sess.hang.sets, targetSec:sess.hang.targetSec,
+        instruction:'Hang relaxed from the bar. Aim for '+sess.hang.targetSec+'s — stop earlier if your grip goes, keep going if you\u2019ve got more.',
+        voice: i===1?'First hang. Target '+sess.hang.targetSec+' seconds. Go when ready.':'Set '+i+'. Target '+sess.hang.targetSec+' seconds.', logKey:'hang'});
+      addRest(sess.hang.restSec, i<sess.hang.sets?'Next: hang, set '+(i+1):(sess.hang.bonusMax?'Next: max hold test':'Next: Ring Rows'));
+    }
+    if(sess.hang.bonusMax){
+      out.push({type:'stopwatch', exercise:'Max Hold Test', setNum:1, totalSets:1, targetSec:null,
+        instruction:'One all-out attempt. No target this time — hang until your grip fully gives out.',
+        voice:'Last one. This is your max test. Go for it.', logKey:'hangmax'});
+      addRest(sess.hang.restSec, 'Next: Ring Rows');
+    }
+  } else if(stageIdx===1){
+    for(let i=1;i<=sess.hangWarm.sets;i++){
+      out.push({type:'stopwatch', exercise:'Dead Hang (warm-up)', setNum:i, totalSets:sess.hangWarm.sets,
+        instruction:'Easy warm-up hang — nothing near max effort.', voice:'Warm-up hang, '+i+'.', logKey:'hangwarm'});
+      addRest(sess.hangWarm.restSec, 'Next: Scapular Pulls');
+    }
+    for(let i=1;i<=sess.scap.sets;i++){
+      out.push({type:'reps', exercise:'Scapular Pulls', setNum:i, totalSets:sess.scap.sets, targetRepsText:sess.scap.reps+' reps',
+        instruction:'From a dead hang, pull your shoulder blades down and back. Elbows stay straight.',
+        voice:'Set '+i+'. '+sess.scap.reps+' reps.', logKey:'scap'});
+      addRest(sess.scap.restSec, i<sess.scap.sets?'Next: Scapular Pulls, set '+(i+1):'Next: Ring Rows');
+    }
+  } else if(stageIdx===2){
+    for(let i=1;i<=sess.neg.sets;i++){
+      out.push({type:'reps', exercise:'Negative Pull-Up', setNum:i, totalSets:sess.neg.sets, targetRepsText:sess.neg.reps+' reps',
+        instruction:'Jump or step to the top position, then lower yourself for a full 5 seconds, every rep.',
+        voice:'Set '+i+'. '+sess.neg.reps+' slow negatives.', logKey:'neg'});
+      addRest(sess.neg.restSec, i<sess.neg.sets?'Next: Negatives, set '+(i+1):'Next: Ring Rows');
+    }
+  } else if(stageIdx===3){
+    for(let i=1;i<=sess.assist.sets;i++){
+      out.push({type:'reps', exercise:'Assisted Pull-Up', setNum:i, totalSets:sess.assist.sets, targetRepsText:sess.assist.reps+' reps',
+        instruction:'Use a band or a light foot-assist. Control the last two inches to the top.',
+        voice:'Set '+i+'. '+sess.assist.reps+' assisted reps.', logKey:'assist'});
+      addRest(sess.assist.restSec, i<sess.assist.sets?'Next: Assisted, set '+(i+1):'Next: Ring Rows');
+    }
+  } else if(stageIdx===4){
+    for(let i=1;i<=sess.pull.sets;i++){
+      out.push({type:'reps', exercise:'Pull-Up', setNum:i, totalSets:sess.pull.sets, targetRepsText:sess.pull.targetReps+' reps',
+        instruction:'Full dead-hang to chin-over-bar. Clean form, no kipping.',
+        voice:'Set '+i+'. Aim for '+sess.pull.targetReps+'.', logKey:'pull', logActual:true, target:sess.pull.targetReps});
+      addRest(sess.pull.restSec, i<sess.pull.sets?'Next: Pull-ups, set '+(i+1):'Next: Ring Rows');
+    }
+  }
+
+  for(let i=1;i<=sess.row.sets;i++){
+    out.push({type:'reps', exercise:'Ring Row', setNum:i, totalSets:sess.row.sets, targetRepsText:sess.row.reps+' reps',
+      instruction:'Set your body angle for the target difficulty. Pull chest to hands.',
+      voice:'Ring rows. Set '+i+'. '+sess.row.reps+' reps.', logKey:'row'});
+    if(i<sess.row.sets) addRest(sess.row.restSec, 'Next: Ring Row, set '+(i+1));
+  }
+
+  COOLDOWN_STEPS.forEach(c=>{
+    out.push({type:'stretch', name:c.name, durationSec:30, instruction:c.instruction, voice:c.voice});
+  });
+
+  out.push({type:'complete'});
+  return out;
+}
+
+/* ============ PLAYER ============ */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startSession(){
+  steps = buildSteps();
+  stepIdx = 0;
+  sessionLog = {};
+  showScreen('screen-player');
+  renderStep();
+}
+
+function clearTimer(){ if(timerHandle){ clearInterval(timerHandle); timerHandle=null; } }
+
+function renderDots(){
+  const s = steps[stepIdx];
+  const wrap = document.getElementById('set-dots');
+  wrap.innerHTML='';
+  if(!s || !s.totalSets){ return; }
+  for(let i=1;i<=s.totalSets;i++){
+    const d=document.createElement('div');
+    d.className='dot'+(i<s.setNum?' filled':'')+(i===s.setNum?' active':'');
+    wrap.appendChild(d);
+  }
+}
+
+function renderStep(){
+  clearTimer();
+  const s = steps[stepIdx];
+  renderDots();
+  const mid = document.getElementById('player-mid');
+  const bottom = document.getElementById('player-bottom');
+  mid.innerHTML=''; bottom.innerHTML='';
+
+  if(s.type==='complete'){ finishSession(); return; }
+
+  if(s.type==='warmup'){
+    remaining = s.durationSec;
+    speak(s.voice);
+    mid.innerHTML = '<div class="exercise-name">Warm-Up</div>'+
+      '<div class="big-timer" id="timerNum">'+remaining+'</div>'+
+      '<div class="instruction">'+s.text+'</div>';
+    bottom.innerHTML = '<button class="secondary-btn" id="skipBtn">skip</button>';
+    document.getElementById('skipBtn').onclick = ()=>advance();
+    timerHandle = setInterval(()=>{
+      remaining--;
+      const el=document.getElementById('timerNum'); if(el) el.textContent=remaining;
+      if(remaining<=0){ advance(); }
+    },1000);
+    return;
+  }
+
+  if(s.type==='stopwatch'){
+    elapsed = 0;
+    let running = false;
+    let targetHit = false;
+    mid.innerHTML = '<div class="exercise-name">'+s.exercise+'</div>'+
+      '<div class="set-count">Set '+s.setNum+' of '+s.totalSets+(s.targetSec?' · target '+s.targetSec+'s':'')+'</div>'+
+      '<div class="big-timer" id="timerNum">0.0</div>'+
+      '<div class="instruction">'+s.instruction+'</div>';
+    bottom.innerHTML = '<button class="primary-btn" id="mainBtn">Start hang</button>';
+    const btn = document.getElementById('mainBtn');
+    btn.onclick = ()=>{
+      if(!running){
+        running = true;
+        speak(s.voice);
+        btn.textContent='Stop — off the bar';
+        const startTime = Date.now();
+        timerHandle = setInterval(()=>{
+          elapsed = (Date.now()-startTime)/1000;
+          const el=document.getElementById('timerNum'); if(el) el.textContent = elapsed.toFixed(1);
+          if(s.targetSec && !targetHit && elapsed>=s.targetSec){
+            targetHit = true;
+            speak('Target hit. Let go when you\u2019re ready, or keep going.');
+          }
+        },100);
+      } else {
+        clearTimer();
+        if(!sessionLog[s.logKey]) sessionLog[s.logKey]=[];
+        sessionLog[s.logKey].push(Math.round(elapsed*10)/10);
+        advance();
+      }
+    };
+    return;
+  }
+
+  if(s.type==='reps'){
+    let actualVal = s.target || parseInt(s.targetRepsText) || 1;
+    speak(s.voice);
+    mid.innerHTML = '<div class="exercise-name">'+s.exercise+'</div>'+
+      '<div class="set-count">Set '+s.setNum+' of '+s.totalSets+'</div>'+
+      '<div class="rep-target">'+s.targetRepsText+'</div>'+
+      '<div class="instruction">'+s.instruction+'</div>'+
+      (s.logActual ? '<div class="stepper"><button id="dec">−</button><span class="val" id="stepVal">'+actualVal+'</span><button id="inc">+</button></div><div class="instruction" style="margin-top:6px;font-size:11.5px;">reps actually completed</div>' : '');
+    bottom.innerHTML = '<button class="primary-btn" id="mainBtn">Done with set</button>';
+    if(s.logActual){
+      document.getElementById('dec').onclick=()=>{ actualVal=Math.max(0,actualVal-1); document.getElementById('stepVal').textContent=actualVal; };
+      document.getElementById('inc').onclick=()=>{ actualVal=Math.min(30,actualVal+1); document.getElementById('stepVal').textContent=actualVal; };
+    }
+    document.getElementById('mainBtn').onclick = ()=>{
+      if(!sessionLog[s.logKey]) sessionLog[s.logKey]=[];
+      sessionLog[s.logKey].push(s.logActual ? actualVal : true);
+      advance();
+    };
+    return;
+  }
+
+  if(s.type==='rest'){
+    remaining = s.durationSec;
+    speak(s.voice);
+    mid.innerHTML = '<div class="exercise-name">Rest</div>'+
+      '<div class="big-timer resting" id="timerNum">'+remaining+'</div>'+
+      '<div class="instruction">'+(s.nextText||'')+'</div>';
+    bottom.innerHTML = '<button class="primary-btn rest-btn" id="skipBtn">Skip rest</button>';
+    document.getElementById('skipBtn').onclick = ()=>advance();
+    timerHandle = setInterval(()=>{
+      remaining--;
+      const el=document.getElementById('timerNum'); if(el) el.textContent=remaining;
+      if(remaining===10) speak('Ten seconds.');
+      if(remaining<=0){ advance(); }
+    },1000);
+    return;
+  }
+
+  if(s.type==='stretch'){
+    remaining = s.durationSec;
+    speak(s.voice);
+    mid.innerHTML = '<div class="exercise-name">Cool-Down</div>'+
+      '<div class="set-count">'+s.name+'</div>'+
+      '<div class="big-timer" id="timerNum">'+remaining+'</div>'+
+      '<div class="instruction">'+s.instruction+'</div>';
+    bottom.innerHTML = '<button class="secondary-btn" id="skipBtn">skip</button>';
+    document.getElementById('skipBtn').onclick = ()=>advance();
+    timerHandle = setInterval(()=>{
+      remaining--;
+      const el=document.getElementById('timerNum'); if(el) el.textContent=remaining;
+      if(remaining<=0){ advance(); }
+    },1000);
+    return;
+  }
+}
+
+function advance(){
+  clearTimer();
+  stepIdx++;
+  if(stepIdx>=steps.length){ finishSession(); return; }
+  renderStep();
+}
+
+function endSessionEarly(){
+  clearTimer();
+  window.speechSynthesis && window.speechSynthesis.cancel();
+  showScreen('screen-home');
+}
+
+let pendingNote = null;
+function finishSession(){
+  clearTimer();
+  showScreen('screen-complete');
+  pendingNote = null;
+  document.querySelectorAll('.note-btn').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('goal-banner-slot').innerHTML='';
+
+  const stage = STAGES[state.stageIndex];
+  let summary = stage.name + ' — session logged.';
+  if(stage.key==='hang' && sessionLog.hang){
+    summary = 'Longest hang: ' + Math.max(...sessionLog.hang) + 's.';
+  } else if(sessionLog.pull){
+    summary = 'Pull-ups: ' + sessionLog.pull.join(', ') + ' reps across sets.';
+  }
+  document.getElementById('complete-summary').textContent = summary;
+}
+
+function commitProgress(note){
+  const stage = STAGES[state.stageIndex];
+  const wd = weekDayFor(state.stageIndex, state.sessionIndex);
+  const dateStr = new Date().toLocaleDateString(undefined,{month:'short',day:'numeric'});
+  state.history.push({date:dateStr, stage:'Week '+wd.week+' Day '+wd.day+' · '+stage.name, note: note==='easy'?'too easy':note==='hard'?'too hard':'on target'});
+  if(state.history.length>30) state.history = state.history.slice(-30);
+
+  if(stage.open){
+    if(sessionLog.pull && note!=='hard'){
+      const minReps = Math.min(...sessionLog.pull);
+      if(minReps >= state.pullTarget && state.pullTarget<8){
+        state.pullTarget++;
+      }
+    }
+    state.stage4SessionCount++;
+    if(state.pullTarget>=8){
+      document.getElementById('goal-banner-slot').innerHTML = '<div class="goal-banner">3×8 reached. That was the goal — keep repeating this session to hold it.</div>';
+    }
+  } else {
+    if(state.sessionIndex < stage.sessions.length-1){
+      state.sessionIndex++;
+    } else {
+      state.stageIndex++;
+      state.sessionIndex=0;
+    }
+  }
+  saveState();
+}
+
+/* ============ WIRE UP ============ */
+document.getElementById('start-btn').onclick = startSession;
+document.getElementById('exit-btn').onclick = endSessionEarly;
+document.getElementById('mute-btn').onclick = function(){
+  state.muted = !state.muted;
+  this.textContent = state.muted ? '🔇 voice off' : '🔊 voice on';
+  saveState();
+};
+document.getElementById('reset-btn').onclick = function(){
+  if(confirm('Reset all progress back to Dead Hang, session 1?')){
+    state = {...DEFAULT_STATE};
+    saveState();
+    renderHome();
+  }
+};
+document.getElementById('skip-btn').onclick = function(){
+  const stage = STAGES[state.stageIndex];
+  if(stage.open){
+    state.stage4SessionCount++;
+  } else if(state.sessionIndex < stage.sessions.length-1){
+    state.sessionIndex++;
+  } else if(state.stageIndex < STAGES.length-1){
+    state.stageIndex++; state.sessionIndex=0;
+  }
+  saveState(); renderHome();
+};
+document.getElementById('back-btn').onclick = function(){
+  const stage = STAGES[state.stageIndex];
+  if(stage.open){
+    state.stage4SessionCount = Math.max(0, state.stage4SessionCount-1);
+  } else if(state.sessionIndex > 0){
+    state.sessionIndex--;
+  } else if(state.stageIndex > 0){
+    state.stageIndex--; state.sessionIndex = STAGES[state.stageIndex].sessions.length-1;
+  }
+  saveState(); renderHome();
+};
+document.getElementById('backup-btn').onclick = function(){
+  const panel = document.getElementById('backup-panel');
+  panel.style.display = 'block';
+  panel.innerHTML = '<div class="panel-label">Copy this and save it somewhere (notes app, etc). Paste it back in "restore from backup" any time.</div>'+
+    '<textarea readonly id="backupText"></textarea>'+
+    '<button class="panel-btn" id="copyBackupBtn">Copy</button>';
+  document.getElementById('backupText').value = JSON.stringify(state);
+  document.getElementById('copyBackupBtn').onclick = async ()=>{
+    try{
+      await navigator.clipboard.writeText(document.getElementById('backupText').value);
+      document.getElementById('copyBackupBtn').textContent = 'Copied';
+    }catch(e){
+      document.getElementById('backupText').select();
+    }
+  };
+};
+document.getElementById('restore-btn').onclick = function(){
+  const panel = document.getElementById('backup-panel');
+  panel.style.display = 'block';
+  panel.innerHTML = '<div class="panel-label">Paste your saved backup code here.</div>'+
+    '<textarea id="restoreText" placeholder="Paste code here"></textarea>'+
+    '<button class="panel-btn" id="applyRestoreBtn">Restore</button>';
+  document.getElementById('applyRestoreBtn').onclick = ()=>{
+    try{
+      const parsed = JSON.parse(document.getElementById('restoreText').value);
+      state = {...DEFAULT_STATE, ...parsed};
+      saveState();
+      renderHome();
+      panel.style.display='none';
+    }catch(e){
+      document.getElementById('backupText'); // no-op
+      panel.querySelector('.panel-label').textContent = 'That code didn\u2019t look right — check you copied the whole thing.';
+    }
+  };
+};
+document.querySelectorAll('.note-btn').forEach(btn=>{
+  btn.onclick = function(){
+    document.querySelectorAll('.note-btn').forEach(b=>b.classList.remove('selected'));
+    this.classList.add('selected');
+    pendingNote = this.dataset.note;
+  };
+});
+document.getElementById('done-btn').onclick = function(){
+  commitProgress(pendingNote || 'right');
+  showScreen('screen-home');
+  renderHome();
+};
+
+loadState();
+</script>
+</body>
+</html>
