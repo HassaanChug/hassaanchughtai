@@ -7,17 +7,21 @@
     <style>
       :root {
         color-scheme: dark;
-        --text: #f4efe6;
-        --muted: #b7aa98;
+        --bg: #120e0a;
+        --rule: #2c2013;
+        --muted: #9c8f79;
         --live: #7dcc9a;
+        --arabic: #e6b869;   /* warm gold — Arabic speech */
+        --english: #f4efe6;  /* cream — native English speech */
+        --gloss: #7fa6b0;    /* cool teal — English gloss under Arabic */
       }
       * { box-sizing: border-box; }
       html, body {
         margin: 0;
         height: 100%;
-        background: #120e0a;
-        color: var(--text);
-        font-family: "Segoe UI", system-ui, -apple-system, "Noto Naskh Arabic", "Noto Sans Arabic", sans-serif;
+        background: var(--bg);
+        color: var(--english);
+        font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
       }
       body {
         min-height: 100vh;
@@ -25,13 +29,15 @@
         flex-direction: column;
         padding: 18px clamp(14px, 3vw, 36px) 24px;
       }
+
+      /* Header */
       header {
         display: flex;
         justify-content: space-between;
         gap: 16px;
         align-items: flex-start;
-        margin-bottom: 16px;
-        border-bottom: 1px solid #2a241c;
+        margin-bottom: 10px;
+        border-bottom: 1px solid var(--rule);
         padding-bottom: 12px;
       }
       .brand {
@@ -51,27 +57,101 @@
         white-space: nowrap;
       }
       .status.live { color: var(--live); }
-      main {
+
+      /* Legend: quick key so a first-time viewer knows what the colors mean */
+      .legend {
+        display: flex;
+        gap: clamp(10px, 2vw, 22px);
+        flex-wrap: wrap;
+        margin: 0 0 14px;
+        font-size: clamp(0.75rem, 1.3vw, 0.92rem);
+        color: var(--muted);
+      }
+      .legend span { display: inline-flex; align-items: center; gap: 6px; }
+      .legend .dot {
+        width: 0.7em; height: 0.7em; border-radius: 50%; flex: none;
+      }
+      .legend .dot.arabic { background: var(--arabic); }
+      .legend .dot.english { background: var(--english); }
+      .legend .dot.gloss { background: var(--gloss); }
+
+      /* Caption stage */
+      main#stage {
         flex: 1;
         min-height: 0;
-        overflow: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: center;
+        gap: clamp(14px, 2.4vh, 28px);
+        overflow: hidden;
+        padding: 1vh 1vw;
       }
-      #captions {
-        margin: 0;
-        width: 100%;
-        font-size: clamp(0.95rem, 1.8vw, 1.35rem);
-        line-height: 1.7;
-        word-break: break-word;
+      .waiting {
+        color: var(--muted);
+        font-size: clamp(1.3rem, 2.6vw, 1.9rem);
+        text-align: center;
       }
-      .original,
-      .translation {
+
+      .block {
+        max-width: min(92vw, 1400px);
+        text-align: center;
+        transition: opacity 0.6s ease, transform 0.6s ease;
+        transform-origin: center bottom;
+      }
+      .tier-0 { opacity: 1;    transform: scale(1);    }
+      .tier-1 { opacity: 0.55; transform: scale(0.93); }
+      .tier-2 { opacity: 0.3;  transform: scale(0.87); }
+      .tier-3 { opacity: 0.15; transform: scale(0.82); }
+
+      .arabic-line {
+        display: block;
+        font-family: "Noto Naskh Arabic", "Noto Kufi Arabic", "Traditional Arabic", serif;
+        direction: rtl;
         unicode-bidi: isolate;
+        color: var(--arabic);
+        font-size: clamp(2.1rem, 5vw, 4rem);
+        line-height: 1.9;
+        letter-spacing: 0; /* tracking breaks Arabic letter joining — never add it */
       }
-      .translation {
-        color: #d4c6b2;
+      .gloss-line {
+        display: block;
+        direction: ltr;
+        unicode-bidi: isolate;
+        color: var(--gloss);
+        font-style: italic;
+        font-size: clamp(1.05rem, 2.1vw, 1.5rem);
+        line-height: 1.5;
+        letter-spacing: 0.01em;
+        margin-top: 0.3em;
       }
-      .partial { opacity: 0.72; }
-      .waiting { color: var(--muted); }
+      .english-line {
+        display: block;
+        direction: ltr;
+        unicode-bidi: isolate;
+        color: var(--english);
+        font-size: clamp(1.9rem, 4.3vw, 3.4rem);
+        line-height: 1.5;
+        letter-spacing: 0.01em;
+      }
+
+      .cursor {
+        display: inline-block;
+        width: 0.5em;
+        margin-inline-start: 0.15em;
+        color: inherit;
+        opacity: 0.8;
+        animation: pulse 1.1s ease-in-out infinite;
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: 0.15; }
+        50% { opacity: 0.9; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .block { transition: opacity 0.05s linear; transform: none !important; }
+        .cursor { animation: none; opacity: 0.6; }
+      }
     </style>
   </head>
   <body>
@@ -83,43 +163,60 @@
       </div>
       <p id="status" class="status">Connecting…</p>
     </header>
-    <main>
-      <div id="captions"><span class="waiting">Waiting for the speaker…</span></div>
+    <p class="legend" aria-hidden="true">
+      <span><span class="dot arabic"></span>Arabic speech</span>
+      <span><span class="dot gloss"></span>English translation</span>
+      <span><span class="dot english"></span>English speech</span>
+    </p>
+    <main id="stage">
+      <div class="waiting">Waiting for the speaker…</div>
     </main>
     <script>
       const DEFAULT_TOPIC = "hc-masjid-k8m2q9n4p1";
       const topic =
         new URLSearchParams(location.search).get("topic") || DEFAULT_TOPIC;
       const statusEl = document.getElementById("status");
-      const captionsEl = document.getElementById("captions");
+      const stageEl = document.getElementById("stage");
       const programLine = document.getElementById("programLine");
       const speakerLine = document.getElementById("speakerLine");
 
-      function appendUnit(original, translation, partial) {
-        const spoken = (original || "").replace(/\s+/g, " ").trim();
-        const translated = (translation || "").replace(/\s+/g, " ").trim();
-        if (!spoken && !translated) return;
-        if (captionsEl.childNodes.length) captionsEl.append(" ");
-        const unit = document.createElement("span");
-        unit.className = partial ? "unit partial" : "unit";
-        if (spoken) {
-          const line = document.createElement("span");
-          line.className = "original";
-          line.dir = "auto";
-          line.textContent = spoken;
-          unit.appendChild(line);
-        }
-        if (translated) {
-          const line = document.createElement("span");
-          line.className = "translation";
-          line.dir = "ltr";
-          line.textContent = (spoken ? " " : "") + "[" + translated + "]";
-          unit.appendChild(line);
-        }
-        captionsEl.appendChild(unit);
+      const ARABIC_RE = /[\u0600-\u06FF\u0750-\u077F]/;
+
+      // --- Reading-time tuning ---------------------------------------
+      // How many finished utterances stay visible (besides the live one).
+      const MAX_VISIBLE = 4;
+      // Every block stays on screen at least this long, however fast it was spoken.
+      const MIN_DWELL_MS = 1800;
+      // Extra time per character, capped, so long sentences get more time.
+      const MS_PER_CHAR = 70;
+      const MAX_DWELL_MS = 7000;
+
+      function dwellFor(text) {
+        return Math.min(MAX_DWELL_MS, Math.max(MIN_DWELL_MS, text.length * MS_PER_CHAR));
       }
 
-      function render(payload) {
+      // finalized[] holds completed utterances with a "firstSeen" timestamp
+      // used to enforce the minimum dwell time above.
+      let finalized = [];
+      let liveUnit = null;
+      let dropTimer = null;
+      let legacyLen = 0;
+
+      function pushFinalized(original, translation) {
+        const o = (original || "").trim();
+        const t = (translation || "").trim();
+        if (!o && !t) return;
+        const isArabic = o ? ARABIC_RE.test(o) : ARABIC_RE.test(t);
+        finalized.push({
+          original: o,
+          translation: t,
+          isArabic,
+          firstSeen: Date.now(),
+          dwell: dwellFor(o + " " + t),
+        });
+      }
+
+      function ingest(payload) {
         document.title = (payload.masjid || "Masjid Taqwa") + " · Live captions";
         const program = payload.program || "";
         const speaker = payload.speaker || "";
@@ -130,34 +227,120 @@
 
         const blocks = Array.isArray(payload.blocks) ? payload.blocks : [];
         const current = payload.current || {};
-        const liveOriginal = (current.original || "") + (payload.partialOriginal || "");
-        const liveTranslation = (current.translation || "") + (payload.partialTranslation || "");
-        const legacyFinal = payload.final || "";
-        const legacyPartial = payload.partial || "";
-        const hasStructured = blocks.length || liveOriginal || liveTranslation;
 
-        captionsEl.replaceChildren();
-        if (!hasStructured && !legacyFinal && !legacyPartial) {
-          const waiting = document.createElement("span");
+        if (blocks.length) {
+          // Structured feed: sync any newly-finalized blocks (append-only).
+          for (let i = finalized.length; i < blocks.length; i++) {
+            pushFinalized(blocks[i].original, blocks[i].translation);
+          }
+          const liveOriginal = (current.original || "") + (payload.partialOriginal || "");
+          const liveTranslation = (current.translation || "") + (payload.partialTranslation || "");
+          if (liveOriginal.trim() || liveTranslation.trim()) {
+            liveUnit = {
+              original: liveOriginal.trim(),
+              translation: liveTranslation.trim(),
+              isArabic: liveOriginal.trim() ? ARABIC_RE.test(liveOriginal) : ARABIC_RE.test(liveTranslation),
+            };
+          } else {
+            liveUnit = null;
+          }
+        } else {
+          // Legacy fallback: one ever-growing string, no block boundaries.
+          const legacyFinal = payload.final || "";
+          const legacyPartial = payload.partial || "";
+          if (legacyFinal.length !== legacyLen) legacyLen = legacyFinal.length;
+          const text = (legacyFinal + legacyPartial).trim();
+          liveUnit = text
+            ? { original: text, translation: "", isArabic: ARABIC_RE.test(text) }
+            : null;
+        }
+
+        scheduleRender();
+      }
+
+      function visibleFinalized() {
+        const now = Date.now();
+        let start = Math.max(0, finalized.length - MAX_VISIBLE);
+        // Keep an older block a little longer if it hasn't had its minimum
+        // reading time yet, rather than snapping it away mid-read.
+        while (start > 0) {
+          const prev = finalized[start - 1];
+          if (now - prev.firstSeen < prev.dwell) start--;
+          else break;
+        }
+        return finalized.slice(start);
+      }
+
+      function buildBlock(item, tier, live) {
+        const div = document.createElement("div");
+        div.className = "block tier-" + tier;
+
+        if (item.isArabic && item.original) {
+          const ar = document.createElement("span");
+          ar.className = "arabic-line";
+          ar.textContent = item.original;
+          div.appendChild(ar);
+          if (item.translation) {
+            const gloss = document.createElement("span");
+            gloss.className = "gloss-line";
+            gloss.textContent = item.translation;
+            div.appendChild(gloss);
+          } else if (live) {
+            ar.appendChild(cursorEl());
+          }
+          if (live && item.translation) {
+            div.lastChild.appendChild(cursorEl());
+          }
+        } else {
+          const en = document.createElement("span");
+          en.className = "english-line";
+          en.textContent = item.original || item.translation || "";
+          if (live) en.appendChild(cursorEl());
+          div.appendChild(en);
+        }
+        return div;
+      }
+
+      function cursorEl() {
+        const c = document.createElement("span");
+        c.className = "cursor";
+        c.textContent = "●";
+        return c;
+      }
+
+      function render() {
+        const visible = visibleFinalized();
+        const items = visible.map((v) => ({ ...v }));
+        if (liveUnit) items.push(liveUnit);
+
+        if (!items.length) {
+          stageEl.replaceChildren();
+          const waiting = document.createElement("div");
           waiting.className = "waiting";
           waiting.textContent = "Waiting for the speaker…";
-          captionsEl.appendChild(waiting);
+          stageEl.appendChild(waiting);
           return;
         }
 
-        if (hasStructured) {
-          for (const block of blocks) {
-            appendUnit(block.original, block.translation, false);
-          }
-          appendUnit(
-            liveOriginal,
-            liveTranslation,
-            Boolean(payload.partialOriginal || payload.partialTranslation),
-          );
-        } else {
-          appendUnit(legacyFinal + legacyPartial, "", Boolean(legacyPartial));
+        stageEl.replaceChildren();
+        const n = items.length;
+        items.forEach((item, idx) => {
+          const distFromEnd = n - 1 - idx;
+          const tier = Math.min(distFromEnd, 3);
+          const isLive = liveUnit && idx === n - 1 && !visible.includes(item);
+          stageEl.appendChild(buildBlock(item, tier, isLive));
+        });
+
+        clearTimeout(dropTimer);
+        if (visible.length) {
+          const earliest = visible[0];
+          const remaining = earliest.dwell - (Date.now() - earliest.firstSeen);
+          if (remaining > 0) dropTimer = setTimeout(render, remaining + 50);
         }
-        captionsEl.parentElement.scrollTop = captionsEl.parentElement.scrollHeight;
+      }
+
+      function scheduleRender() {
+        render();
       }
 
       const source = new EventSource("https://ntfy.sh/" + encodeURIComponent(topic) + "/sse");
@@ -173,7 +356,7 @@
         try {
           const envelope = JSON.parse(event.data);
           const payload = JSON.parse(envelope.message);
-          render(payload);
+          ingest(payload);
           statusEl.textContent = payload.live ? "Live" : "Paused";
           statusEl.classList.toggle("live", Boolean(payload.live));
         } catch {
